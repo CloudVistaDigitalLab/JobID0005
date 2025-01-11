@@ -1,0 +1,252 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+}
+
+.container {
+  background-color: #fff;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 800px;
+  padding: 24px;
+  box-shadow: 8px 8px 24px rgba(66, 68, 90, 0.2);
+  margin: 5% auto;
+  justify-content: center;
+  align-items: center;
+}
+.App {
+  text-align: center;
+}
+
+input, 
+textarea, 
+select, 
+button 
+{
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+
+/********** Welcome Page styles **********/
+
+.claims-section {
+  padding: 20px;
+  background-color: #f8f9fa;
+  font-family: Arial, sans-serif;
+
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  p {
+    text-align: center;
+    font-size: 16px;
+    color: #555;
+    margin: 5px 0;
+  }
+
+  button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px 0;
+    font-size: 14px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  .claim-item {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    p {
+      font-size: 14px;
+      color: #444;
+
+      strong {
+        color: #000;
+      }
+    }
+
+    button {
+      margin-top: 10px;
+      width: 100%;
+    }
+  }
+
+  .view-all-button {
+    text-align: center;
+
+    button {
+      font-size: 16px;
+      width: auto;
+      margin: 0 auto;
+    }
+  }
+
+  .admin-actions {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e9ecef;
+    border-radius: 5px;
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    div {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+
+      button {
+        font-size: 14px;
+        padding: 10px 20px;
+        width: auto;
+      }
+    }
+  }
+}
+
+
+/********** End of Welcome Page styles **********/
+
+
+
+/********** Login & Signup Page styles **********/
+
+.signin-signup-container {
+  background-color: #fff;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 700px;
+  padding: 24px;
+  box-shadow: 8px 8px 24px rgba(66, 68, 90, 0.2);
+  margin: 5% auto;
+  justify-content: center;
+  align-items: center;
+
+  .content{
+    padding: 1rem;
+  }
+}
+
+input, 
+textarea, 
+select, 
+button 
+{
+  padding: 10px;
+  max-width: 800px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease-in-out;}
+
+  button:hover{
+    background-color: #06796c; 
+  }
+
+
+/********** End of Login & Signup Page styles **********/
+
+
+/********* View All Claims page **********/
+
+.claims-table-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+
+  h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    thead {
+      background-color: #007bff;
+      color: #fff;
+
+      th {
+        padding: 10px;
+        font-size: 14px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+    }
+
+    tbody {
+      tr {
+        &:nth-child(even) {
+          background-color: #f2f2f2;
+        }
+
+        &:hover {
+          background-color: #e6f7ff;
+        }
+
+        td {
+          padding: 10px;
+          font-size: 14px;
+          color: #333;
+          border: 1px solid #ddd;
+
+          a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    table {
+      font-size: 12px;
+
+      th,
+      td {
+        padding: 8px;
+      }
+    }
+  }
+}
+
+/************ End of View All Claims Section **********/
