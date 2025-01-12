@@ -68,6 +68,7 @@ const getDesignTokens = (mode) => ({
         dark: brand[800],
       }),
     },
+    
     secondary: {
       light: secondary[300],
       main: secondary[500],
@@ -123,6 +124,7 @@ const getDesignTokens = (mode) => ({
       secondary: gray[600],
       ...(mode === 'dark' && { primary: '#fff', secondary: gray[400] }),
     },
+    
     action: {
       selected: `${alpha(brand[200], 0.2)}`,
       ...(mode === 'dark' && {
@@ -610,6 +612,7 @@ export default function customTheme(mode) {
           }),
         },
       },*/
+      
     },
   };
 }

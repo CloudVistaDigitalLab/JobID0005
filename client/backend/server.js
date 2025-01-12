@@ -11,7 +11,9 @@ app.use('/uploads', express.static('uploads'));
 
 
 app.use('/api/claim', claimRouter);
-app.use('/api/payment', paymentRouter);
+app.use('/api', paymentRoutes);
+
+
 
 
 const PORT = process.env.PORT || 4000;

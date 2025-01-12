@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams ,useNavigate } from 'react-router-dom';
 
 const CompanyDetailsPage = () => {
   const { companyName } = useParams(); // Get company name from URL
@@ -14,33 +14,9 @@ const CompanyDetailsPage = () => {
   };
 
   const companyPlan = companyPlans[companyName] || { price: "N/A", amount: 0, details: "No details available." };
-
-  const handleBuyNow = async () => {
-    try {
-      const response = await fetch('http://localhost:4000/api/payment/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          planName: companyName,
-          amount: companyPlan.amount, // Pass the amount in cents
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Redirect to Stripe Checkout
-        window.location.href = `https://checkout.stripe.com/pay/${data.id}`;
-      } else {
-        console.error('Error creating checkout session:', data.error);
-        alert('Failed to initiate payment. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Something went wrong. Please try again later.');
-    }
+  const navigate = useNavigate();
+  const handleBuyNow = () => {
+    navigate(`/payment/${companyName}`); // Navigating to the payment page with the company name as a parameter
   };
 
   return (

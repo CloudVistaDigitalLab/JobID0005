@@ -21,6 +21,8 @@ import PaymentSuccess from './Components/PaymentSuccess';
 import PaymentFailure from './Components/PaymentFailure';
 import Footer from './Components/Footer';
 import AppAppBar from './Components/AppAppBar';
+import PaymentPage from './Components/Payment';
+
 
 
 const App = () => {
@@ -65,6 +67,7 @@ const App = () => {
   return (
     <ThemeProvider theme={currentTheme}>
       <CssBaseline />
+      
       <RefrshHandler setIsAuthenticated={setIsAuthenticated} />
       {!isAuthPage && (
         <header>
@@ -82,6 +85,7 @@ const App = () => {
             <Route path="/company/:companyName" element={<CompanyDetailsPage />} />
             <Route path="/success" element={<PaymentSuccess />} />
             <Route path="/cancel" element={<PaymentFailure />} />
+            <Route path="/payment/:companyName" element={<PaymentPage />} />
           </Routes>
       </main>
       {!isAuthPage && (
