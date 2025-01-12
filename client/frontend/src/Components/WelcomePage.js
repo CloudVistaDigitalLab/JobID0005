@@ -28,6 +28,10 @@ function WelcomePage() {
     navigate(`/company/${company}`); // Navigate to the company details page
   };
 
+  const handleNavigate = (navigate) => {
+    navigate(`${navigate}`);
+  }
+
   return (
     <div className="welcome-container">
 

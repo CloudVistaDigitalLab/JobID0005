@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import { ThemeProvider, useTheme, createTheme } from '@mui/material/styles';
 import { amber, deepOrange, grey } from '@mui/material/colors';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Button, CssBaseline } from '@mui/material';
 import customTheme from './customTheme';
 //import AppAppBar from './components/appbar/AppAppBar';
@@ -37,7 +37,7 @@ const App = () => {
   }, []);
   
   const theme = useTheme();
-  const toogleTheme = () => {
+  const toggleTheme = () => {
     if (themeMode === 'light') {
       setThemeMode('dark')
       localStorage.setItem('theme', 'dark');
@@ -47,6 +47,9 @@ const App = () => {
     }
     
   }
+
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
   
   const [is404, setIs404] = React.useState(false);
   const [isNavbarHidden, setIsNavbarHidden] = React.useState(false);
@@ -63,9 +66,11 @@ const App = () => {
     <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <RefrshHandler setIsAuthenticated={setIsAuthenticated} />
-      <header>
-        <AppAppBar toggleColorMode={toogleTheme} mode={themeMode} />
-      </header>
+      {!isAuthPage && (
+        <header>
+          <AppAppBar toggleColorMode={toggleTheme} mode={themeMode} />
+        </header>
+      )}
       <main>
           <Routes>
             <Route path="/" element={<WelcomePage />} />
@@ -79,9 +84,11 @@ const App = () => {
             <Route path="/cancel" element={<PaymentFailure />} />
           </Routes>
       </main>
-      <footer>
-        <Footer/>
-      </footer>
+      {!isAuthPage && (
+        <footer>
+          <Footer />
+        </footer>
+      )}
     </ThemeProvider>
   );
 }

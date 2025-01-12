@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
 import './index.css';
-import Login from './Components/Login';
-import Signup from './Components/Signup';
-import AdminHome from './Components/AdminHome';
-import WelcomePage from './Components/WelcomePage'; 
+import Login from './components/Login';
+import Signup from './components/Signup';
+import AdminHome from './components/AdminHome';
+import WelcomePage from './components/WelcomePage'; 
 import RefrshHandler from './RefrshHandler';
-import ClaimList from './Components/ClaimList';
-import ViewAllClaims from './Components/AdminViewAllClaims';
-import BuyInsurancePlan from './Components/BuyInsurancePlan';
+import ClaimList from './components/ClaimList';
+import ViewAllClaims from './components/AdminViewAllClaims';
+import BuyInsurancePlan from './components/BuyInsurancePlan';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,6 +23,7 @@ function App() {
       <RefrshHandler setIsAuthenticated={setIsAuthenticated} />
       <Routes>
         {/* <Route path="/" element={<Navigate to="/welcome" />} /> Redirect to the Welcome Page */}
+        <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/adminHome" element={<PrivateRoute element={<AdminHome />} />} />
