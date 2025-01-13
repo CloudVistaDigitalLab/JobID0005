@@ -25,6 +25,7 @@ const paymentSchema = new mongoose.Schema({
     cardNumber: String,
     expiryDate: String,
     cvv: String,
+    price:String
   },
 });
 

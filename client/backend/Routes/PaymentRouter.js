@@ -64,4 +64,18 @@ router.post('/send-email', (req, res) => {
     });
 });
 
+
+router.get('/user-payments/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const payments = await Payment.find({ userId });
+    res.json(payments);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching payments' });
+  }
+});
+
+
+
+
 module.exports = router;

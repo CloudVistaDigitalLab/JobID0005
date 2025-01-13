@@ -1,6 +1,6 @@
 import React from 'react';
 import Lottie from 'react-lottie';
-import animationData from '../Assets/Animation/LoadAnime.json'; // Your Lottie animation file
+import animationData from '../Assets/Animation/succesfullyDone.json'; // Your Lottie animation file
 
 const LoadingScreen = () => {
   const defaultOptions = {
