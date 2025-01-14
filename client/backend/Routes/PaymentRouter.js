@@ -1,4 +1,5 @@
 const express = require('express');
+const cron = require('node-cron');
 const router = express.Router();
 const Payment = require('../Models/Payment'); // Assuming the Payment model is defined
 const nodemailer = require('nodemailer');
@@ -76,6 +77,84 @@ router.get('/user-payments/:userId', async (req, res) => {
 });
 
 
+router.get('/payments/non-expired/:userId', async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      
+      const payments = await Payment.find({
+        userId: userId,
+        'paymentInfo.isExpired': false // Only non-expired plans
+      });
+  
+      if (payments.length === 0) {
+        return res.status(404).json({ message: 'No active payments found.' });
+      }
+  
+      return res.json(payments);
+    } catch (error) {
+      console.error('Error fetching non-expired payments:', error);
+      return res.status(500).json({ message: 'Server error' });
+    }
+  });
+
+
+  router.get('/payments/expired/:userId', async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      
+      const payments = await Payment.find({
+        userId: userId,
+        'paymentInfo.isExpired': true // Only expired plans
+      });
+  
+      if (payments.length === 0) {
+        return res.status(404).json({ message: 'No expired payments found.' });
+      }
+  
+      return res.json(payments);
+    } catch (error) {
+      console.error('Error fetching expired payments:', error);
+      return res.status(500).json({ message: 'Server error' });
+    }
+  });
+
+
+
+
+
+
+
+
+
+
+
+cron.schedule('0 0 * * *', async () => {
+    try {
+      const today = new Date();
+      const payments = await Payment.find();
+  
+      for (const payment of payments) {
+        const paymentDate = new Date(payment.paymentInfo.paymentDate);
+        const diffInDays = Math.floor((today - paymentDate) / (1000 * 60 * 60 * 24)); // Calculate the difference in days
+  
+        if (diffInDays > 30 && !payment.paymentInfo.isExpired) {
+          payment.paymentInfo.isExpired = true;
+          await payment.save();
+          console.log(`Plan expired for user: ${payment.userId}`);
+        }
+      }
+  
+      console.log('Expired status updated successfully.');
+    } catch (error) {
+      console.error('Error updating expired status:', error);
+    }
+  });
+
+
+ 
+  
+
+  
 
 
 module.exports = router;

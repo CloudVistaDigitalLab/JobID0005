@@ -25,8 +25,18 @@ const paymentSchema = new mongoose.Schema({
     cardNumber: String,
     expiryDate: String,
     cvv: String,
-    price:String
+    price: String,
+    paymentDate: {
+      type: String,
+      required: true,
+      default: () => {
+        const today = new Date();
+        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      },
+    },
+    isExpired: { type: Boolean, default: false },
   },
 });
+
 
 module.exports = mongoose.model('Payment', paymentSchema, 'paymentsPlans');

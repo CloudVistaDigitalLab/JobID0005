@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
+import Badge from '@mui/material/Badge';
 import { Button, Typography, Box, Grid, Paper, Container, Tab, Tabs } from '@mui/material';
 import axios from 'axios';
 
 function Home() {
     const [clientData, setClientData] = useState([]);
     const [claimtData, setClaimtData] = useState([]);
+    const [expiredPlans, setExpiredPlans] = useState([]);
     const navigate = useNavigate();
     const [userName, setUserName] = useState('');
     const [userEmail, setUserEmail] = useState('');
@@ -35,18 +37,51 @@ function Home() {
         console.log('User ID:', userId);
 
         if (userId) {
-            axios.get(`http://localhost:4000/api/user-payments/${userId}`)
+            axios.get(`http://localhost:4000/api/payments/non-expired/${userId}`)
                 .then(response => {
                     setClientData(response.data);
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    handleError('Failed to fetch data');
+
                 });
         } else {
             handleError('User ID not found');
         }
     }, []);
+
+
+
+    useEffect(() => {
+        console.log('LocalStorage:', localStorage);
+
+        const userId = localStorage.getItem('loggedInUserId');
+        const storedUserName = localStorage.getItem('loggedInUserName');
+        const storedUserEmail = localStorage.getItem('loggedInUserEmail');
+
+        setUserName(storedUserName || ''); // Update state with username
+        setUserEmail(storedUserEmail || ''); // Update state with email
+
+        console.log('User ID:', userId);
+
+        if (userId) {
+            axios.get(`http://localhost:4000/api/payments/expired/${userId}`)
+                .then(response => {
+                    setExpiredPlans(response.data);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+
+                });
+        } else {
+            handleError('User ID not found');
+        }
+    }, []);
+
+
+
+
+
 
 
 
@@ -92,7 +127,8 @@ function Home() {
     };
 
     return (
-        <Container sx={{ marginTop: 10, marginBottom: 5 }}>
+
+        <Box sx={{ justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', marginTop: "70px" }}>
             {/* <header>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
                     <Typography variant="h5">Vehicle Insurance Co.</Typography>
@@ -101,7 +137,7 @@ function Home() {
                     </Button>
                 </Box>
             </header> */}
-            <Paper elevation={3} sx={{ padding: 4, borderRadius: 2 }}>
+            <Paper elevation={3} sx={{ padding: 4, borderRadius: 2, marginBottom: 2, width: '95%' }}>
 
 
 
@@ -183,50 +219,92 @@ function Home() {
 
 
                 <Box>
-                    <Tabs value={value} onChange={handleChange} centered>
-                        <Tab label="Registerd Insurance plans" />
-                        <Tab label="Claim Information" />
-                        <Tab label="Vehicle Insurance Policies" />
-                    </Tabs>
+                    <Box
+                        sx={{
+                            width: '100%',
+                            overflowX: { xs: 'auto' }, // Horizontal scroll for small screens
+                            '& .MuiTabs-flexContainer': {
+                                flexWrap: { xs: 'nowrap', sm: 'wrap' },
+                                justifyContent: { xs: 'flex-start', sm: 'center' },
+                            },
+                        }}
+                    >
+                        <Tabs
+                            value={value}
+                            onChange={handleChange}
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            allowScrollButtonsMobile
+                            sx={{ borderBottom: 1, borderColor: 'divider' }}
+                        >
+                            <Tab label="Registered Insurance Plans" />
+                            <Tab label="Claim Information" />
+                            <Tab
+                                label={
+                                    <Badge
+                                        color="error"
+                                        variant="dot"
+                                        invisible={expiredPlans.length === 0}
+                                    >
+                                        The Insurance Plan Needs to be Renewed
+                                    </Badge>
+                                }
+                            />
+                            <Tab label="Vehicle Insurance Policies" />
+                        </Tabs>
+                    </Box>
+
 
                     {/* Conditionally render content based on the active tab */}
                     {value === 0 && (
                         <div style={{ padding: '20px' }}>
                             <Typography variant="h4" sx={{ marginBottom: 2 }}>
-                                 Vehicle Insurance Plans
+                                Vehicle Insurance Plans
                             </Typography>
-                            <Grid container spacing={4} sx={{ marginTop: 0 }}>
-                            {clientData.map((client, index) => (
-                                <Grid item xs={12} sm={6} md={4} key={index}>
-                                    <Paper sx={{ padding: 2, marginBottom: 2 }}>
-                                        <Typography variant="h5">Owner Information</Typography>
-                                        <Typography>Name: {client.clientInfo.fullName}</Typography>
-                                        <Typography>Email: {client.clientInfo.emailAddress}</Typography>
-                                        <Typography>Contact Number: {client.clientInfo.contactNumber}</Typography>
-                                        <Typography>Address: {client.clientInfo.permanentAddress}</Typography>
-                                        <br />
-                                        <Typography variant="h5">Vehicle Details</Typography>
-                                        <Typography>Registration Number: {client.vehicleDetails.registrationNumber}</Typography>
-                                        <Typography>Model: {client.vehicleDetails.model}</Typography>
-                                        <Typography>Color: {client.vehicleDetails.color}</Typography>
-                                        <Typography>Type: {client.vehicleDetails.type}</Typography>
-                                        <Typography>Chassis Number: {client.vehicleDetails.chassisNumber}</Typography>
-                                        <br />
-                                        <Typography variant="h5">Payment Information</Typography>
-                                        <Typography>Price: {client.paymentInfo.price}</Typography>
-                                    </Paper>
+
+                            {clientData.length === 0 ? (
+                                <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+                                    No active plans yet...
+                                </Typography>
+                            ) : (
+                                <Grid container spacing={4} sx={{ marginTop: 0 }}>
+                                    {clientData.map((client, index) => (
+                                        <Grid item xs={12} sm={6} md={4} key={index}>
+                                            <Paper sx={{ padding: 2, marginBottom: 2 }}>
+                                                <Typography variant="h5">Owner Information</Typography>
+                                                <Typography>Name: {client.clientInfo.fullName}</Typography>
+                                                <Typography>Email: {client.clientInfo.emailAddress}</Typography>
+                                                <Typography>Contact Number: {client.clientInfo.contactNumber}</Typography>
+                                                <Typography>Address: {client.clientInfo.permanentAddress}</Typography>
+                                                <br />
+                                                <Typography variant="h5">Vehicle Details</Typography>
+                                                <Typography>Registration Number: {client.vehicleDetails.registrationNumber}</Typography>
+                                                <Typography>Model: {client.vehicleDetails.model}</Typography>
+                                                <Typography>Color: {client.vehicleDetails.color}</Typography>
+                                                <Typography>Type: {client.vehicleDetails.type}</Typography>
+                                                <Typography>Chassis Number: {client.vehicleDetails.chassisNumber}</Typography>
+                                                <br />
+                                                <Typography variant="h5">Payment Information</Typography>
+                                                <Typography>Price: {client.paymentInfo.price}</Typography>
+                                            </Paper>
+                                        </Grid>
+                                    ))}
                                 </Grid>
-                            ))}
-                        </Grid>
+                            )}
                         </div>
                     )}
 
                     {value === 1 && (
                         <div style={{ padding: '20px' }}>
                             <Typography variant="h4" sx={{ marginBottom: 2 }}>
-                                 Vehicle Claimes
+                                Vehicle Claimes
                             </Typography>
-                            <Grid container spacing={4} sx={{ marginTop: 0 }}>
+                            {claimtData.length === 0 ? (
+                                <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+                                    No claimes had been added...
+                                </Typography>
+                            ) :(
+                                <Grid container spacing={4} sx={{ marginTop: 0 }}>
                                 {claimtData.map((claim, index) => (
                                     <Grid item xs={12} sm={6} md={4} key={index}>
                                         <Paper sx={{ padding: 2, marginBottom: 2 }}>
@@ -246,9 +324,56 @@ function Home() {
                                     </Grid>
                                 ))}
                             </Grid>
+                            )}
                         </div>
                     )}
                     {value === 2 && (
+                        <div style={{ padding: '20px' }}>
+                            <Badge
+                                color="error"
+                                variant="dot"
+                                invisible={expiredPlans.length === 0} // Hide the dot if no expired plans
+                                sx={{ marginRight: 1 }}
+                            />
+                            <Typography variant="h4" sx={{ marginBottom: 2 }} >
+
+                                I have to renew the insurance plan
+
+                            </Typography>
+
+                            {expiredPlans.length === 0 ? (
+                                <Typography variant="h6" sx={{ color: 'text.secondary' }}>
+                                    No expired plans yet...
+                                </Typography>
+                            ) : (
+                                <Grid container spacing={4} sx={{ marginTop: 0 }}>
+                                {expiredPlans.map((client, index) => (
+                                    <Grid item xs={12} sm={6} md={4} key={index}>
+                                        <Paper sx={{ padding: 2, marginBottom: 2 }}>
+                                            <Typography variant="h5">Owner Information</Typography>
+                                            <Typography>Name: {client.clientInfo.fullName}</Typography>
+                                            <Typography>Email: {client.clientInfo.emailAddress}</Typography>
+                                            <Typography>Contact Number: {client.clientInfo.contactNumber}</Typography>
+                                            <Typography>Address: {client.clientInfo.permanentAddress}</Typography>
+                                            <br />
+                                            <Typography variant="h5">Vehicle Details</Typography>
+                                            <Typography>Registration Number: {client.vehicleDetails.registrationNumber}</Typography>
+                                            <Typography>Model: {client.vehicleDetails.model}</Typography>
+                                            <Typography>Color: {client.vehicleDetails.color}</Typography>
+                                            <Typography>Type: {client.vehicleDetails.type}</Typography>
+                                            <Typography>Chassis Number: {client.vehicleDetails.chassisNumber}</Typography>
+                                            <br />
+                                            <Typography variant="h5">Payment Information</Typography>
+                                            <Typography>Price: {client.paymentInfo.price}</Typography>
+                                            <Button variant="contained" color="primary" sx={{ marginTop: 2 }} onClick={() => handleNavigation('/pay-insurance')}>Renew The Plan</Button>
+                                        </Paper>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                            )}
+                        </div>
+                    )}
+                    {value === 3 && (
                         <div style={{ padding: '20px' }}>
                             <Typography variant="h4" sx={{ marginBottom: 2 }}>
                                 Sri Lanka Vehicle Insurance Policies
@@ -346,7 +471,8 @@ function Home() {
 
                 <ToastContainer />
             </Paper>
-        </Container>
+        </Box>
+
 
     );
 }

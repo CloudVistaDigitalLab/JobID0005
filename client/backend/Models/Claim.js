@@ -10,7 +10,9 @@ const claimSchema = new mongoose.Schema({
   incidentDate: { type: Date, required: true },
   claimAmount: { type: Number, required: true },
   description: { type: String, required: true },
-  uploadedURLs: { type: [String], required: true },              
+  uploadedURLs: { type: [String], required: true },   
+  status: { type: String, required: false, default: 'Pending' },  
+  adminDescription: { type: String, required: false, default:''},           
 });
 
 module.exports = mongoose.model('Claim', claimSchema);
