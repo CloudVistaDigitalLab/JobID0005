@@ -45,6 +45,7 @@ const ProductRouter = require('./Routes/ProductRouter');
 const ClaimRouter = require('./Routes/ClaimRouter');
 const Stripe = require('stripe'); // Stripe library
 const PaymentRouter = require('./Routes/PaymentRouter');
+const paymentRoutes = require('./Routes/PaymentRouter');
 
 require('dotenv').config();
 require('./Models/db');
@@ -69,6 +70,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/auth', AuthRouter);
 app.use('/products', ProductRouter);
 app.use('/api/claim', ClaimRouter);
+app.use('/api', paymentRoutes);
 
 // Ping route for testing
 app.get('/ping', (req, res) => {
