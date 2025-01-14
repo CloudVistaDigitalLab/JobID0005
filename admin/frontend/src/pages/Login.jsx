@@ -2,6 +2,10 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import TextField from '@mui/material/TextField'
+
 
 function Login() {
 
@@ -57,36 +61,46 @@ function Login() {
     }
 
     return (
-        <div className='container'>
+        <Card className='container'>
             <h1>Login</h1>
             <form onSubmit={handleLogin}>
                 <div>
-                    <label htmlFor='email'>Email</label>
-                    <input
+                    <TextField
+                        id="email" 
+                        label="Email" 
+                        variant="outlined" 
                         onChange={handleChange}
                         type='email'
                         name='email'
-                        placeholder='Enter your email...'
                         value={loginInfo.email}
+                        required
+                        sx={{width:'100%'}}
                     />
                 </div>
+                <br/>
                 <div>
-                    <label htmlFor='password'>Password</label>
-                    <input
+                    <TextField
+                        id="password" 
+                        label="Password" 
+                        variant="outlined" 
                         onChange={handleChange}
                         type='password'
                         name='password'
-                        placeholder='Enter your password...'
                         value={loginInfo.password}
+                        required
+                        sx={{width:'100%'}}
                     />
                 </div>
-                <button type='submit'>Login</button>
+                <br/>
+                <Button type='submit' variant="contained">Login</Button>
+                <br/>
+                <br/>
                 <span>Does't have an account ?
                     <Link to="/signup">Signup</Link>
                 </span>
             </form>
             <ToastContainer />
-        </div>
+        </Card>
     )
 }
 

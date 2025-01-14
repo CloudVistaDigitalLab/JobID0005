@@ -1,25 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import { ThemeProvider, useTheme, createTheme } from '@mui/material/styles';
-import { amber, deepOrange, grey } from '@mui/material/colors';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { Button, CssBaseline } from '@mui/material';
-import customTheme from './customTheme';
-
-import './App.css';
-import './index.css';
-import Login from './pages/Login';
-import Signup from './components/Signup';
-import AdminHome from './components/AdminHome';
-import WelcomePage from './components/WelcomePage'; 
-import RefreshHandler from './RefreshHandler';
-import ClaimList from './components/ClaimList';
-import ViewAllClaims from './components/AdminViewAllClaims';
-import BuyInsurancePlan from './components/BuyInsurancePlan';
-import AppAppBar from './components/AppAppBar';
-import AppBar from './components/AppBar';
-
+import * as React from 'react';
 import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MenuList from '@mui/material/MenuList';
@@ -28,6 +9,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
+import { createTheme } from '@mui/material/styles';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { AppProvider } from '@toolpad/core/AppProvider';
@@ -39,12 +21,6 @@ import {
   SignOutButton,
 } from '@toolpad/core/Account';
 
-import { useNavigate, Link } from 'react-router-dom';
-import ListItemButton from '@mui/material/ListItemButton';
-import Dashboard from './pages/Dashboard';
-import DescriptionIcon from '@mui/icons-material/Description';
-import Claims from './pages/Claims';
-
 const NAVIGATION = [
   {
     kind: 'header',
@@ -52,51 +28,31 @@ const NAVIGATION = [
   },
   {
     segment: 'dashboard',
-    title: (
-      <span
-        style={{ cursor: 'pointer' }}
-        onClick={() => {
-          window.location.href = '/dashboard'; // Use href to change the URL
-        }}
-      >
-        Dashboard
-      </span>
-    ),
+    title: 'Dashboard',
     icon: <DashboardIcon />,
-    link: '/dashboard'
   },
   {
-    segment: 'claims',
-    title: (
-      <span
-        style={{ cursor: 'pointer' }}
-        onClick={() => {
-          window.location.href = '/claims'; // Use href to change the URL
-        }}
-      >
-        Claims
-      </span>
-    ),
-    icon: <DescriptionIcon />,
+    segment: 'orders',
+    title: 'Orders',
+    icon: <ShoppingCartIcon />,
   },
 ];
 
-const nav = (
-  <React.Fragment>
-    <ListItemButton href='/'>
-      <ListItemIcon>
-        <DashboardIcon />
-      </ListItemIcon>
-      <ListItemText primary="Dashboard" />
-    </ListItemButton>
-    <ListItemButton href='/test'>
-      <ListItemIcon>
-        <ShoppingCartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Test" />
-    </ListItemButton>
-  </React.Fragment>
-)
+const demoTheme = createTheme({
+  cssVariables: {
+    colorSchemeSelector: 'data-toolpad-color-scheme',
+  },
+  colorSchemes: { light: true, dark: true },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 600,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
+});
 
 function DemoPageContent({ pathname }) {
   return (
@@ -168,14 +124,6 @@ const accounts = [
 ];
 
 function SidebarFooterAccountPopover() {
-  const navigate = useNavigate();
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('loggedInUser');
-    setTimeout(() => {
-      navigate('/login');
-    }, 1000);
-  };
   return (
     <Stack direction="column">
       <Typography variant="body2" mx={2} mt={1}>
@@ -223,9 +171,7 @@ function SidebarFooterAccountPopover() {
       </MenuList>
       <Divider />
       <AccountPopoverFooter>
-        <SignOutButton onClick={handleLogout}>
-          <Typography>Log Out</Typography>
-        </SignOutButton>
+        <SignOutButton />
       </AccountPopoverFooter>
     </Stack>
   );
@@ -292,48 +238,9 @@ const demoSession = {
   },
 };
 
-function App(props) {
-  const navigate = useNavigate();
-  const [themeMode, setThemeMode] = React.useState('light')
-  const currentTheme = createTheme(customTheme(themeMode),);
+function AppBar(props) {
+  const { window } = props;
 
-  useEffect(() => {
-    const themeFromLocalStorage = localStorage.getItem('theme');
-    if (themeFromLocalStorage) {
-      setThemeMode(themeFromLocalStorage);
-    } else {
-      setThemeMode('light');
-    }
-  }, []);
-  
-  const theme = useTheme();
-  const toggleTheme = () => {
-    if (themeMode === 'light') {
-      setThemeMode('dark')
-      localStorage.setItem('theme', 'dark');
-    } else {
-      setThemeMode('light')
-      localStorage.setItem('theme', 'light');
-    }
-    
-  }
-
-  const location = useLocation();
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/';
-  
-  const [is404, setIs404] = React.useState(false);
-  const [isNavbarHidden, setIsNavbarHidden] = React.useState(false);
-  const [isFooterHiddden, setIsFooterHidden] = React.useState(false);
-  const currentLocation = window.location.pathname;
-
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const PrivateRoute = ({ element }) => {
-    return isAuthenticated ? element : <Navigate to="/login" />;
-  };
-
-
-  
   const [pathname, setPathname] = React.useState('/dashboard');
 
   const router = React.useMemo(() => {
@@ -344,6 +251,8 @@ function App(props) {
     };
   }, [pathname]);
 
+  // Remove this const when copying and pasting into your project.
+  const demoWindow = window !== undefined ? window() : undefined;
 
   const [session, setSession] = React.useState(demoSession);
   const authentication = React.useMemo(() => {
@@ -357,64 +266,30 @@ function App(props) {
     };
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('loggedInUser');
-    setTimeout(() => {
-      navigate('/login');
-    }, 1000);
-  };
-
   return (
-    <ThemeProvider theme={currentTheme}>
-      <CssBaseline />
-      <RefreshHandler setIsAuthenticated={setIsAuthenticated}>
-        {isAuthPage ?
-          <main>
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-            </Routes>
-          </main>
-          :
-          <AppProvider
-            navigation={NAVIGATION}
-            router={router}
-            theme={currentTheme}
-            authentication={authentication}
-            session={session}
-            branding={{title: 'Vehicle Insurance Co.', logo: ''}}
-          >
-            <DashboardLayout
-              appTitle="Your Custom Title"
-              header={
-                <AppBar position="static">
-                  <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    Your Custom Title
-                  </Typography>
-                </AppBar>
-              }
-            >
-              <main>
-                <Routes>
-                  <Route path="/" element={<Login />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/adminHome" element={<PrivateRoute element={<AdminHome />} />} />
-                  <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
-                  <Route path="/claims" element={<PrivateRoute element={<Claims />} />} />
-                  <Route path="/welcome" element={<WelcomePage />} /> 
-                  <Route path="/admin/claim-list" element={<PrivateRoute element={<ClaimList />} />} />
-                  <Route path="/view-all-claims" element={<PrivateRoute element={<ViewAllClaims />} />} />
-                </Routes>
-              </main>
-            </DashboardLayout>
-          </AppProvider>
-        }
-      </RefreshHandler>
-    </ThemeProvider>
+    <AppProvider
+      navigation={NAVIGATION}
+      router={router}
+      theme={demoTheme}
+      window={demoWindow}
+      authentication={authentication}
+      session={session}
+    >
+      <DashboardLayout
+        slots={{ toolbarAccount: () => null, sidebarFooter: SidebarFooterAccount }}
+      >
+        <DemoPageContent pathname={pathname} />
+      </DashboardLayout>
+    </AppProvider>
   );
 }
 
-export default App;
+AppBar.propTypes = {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * Remove this when copying and pasting into your project.
+   */
+  window: PropTypes.func,
+};
+
+export default AppBar;
