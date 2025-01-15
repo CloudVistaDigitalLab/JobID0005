@@ -7,7 +7,14 @@ const claimSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   contactNumber: { type: String, required: true },
   policyNumber: { type: String, required: true },
-  incidentDate: { type: Date, required: true },
+  incidentDate: {
+    type: String,
+    required: true,
+    default: () => {
+      const today = new Date();
+      return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    },
+  },
   claimAmount: { type: Number, required: true },
   description: { type: String, required: true },
   uploadedURLs: { type: [String], required: true },   

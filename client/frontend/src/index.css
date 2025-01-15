@@ -176,7 +176,7 @@ header {
 .plans-section{
   height: auto;
   background-color: var(--whiteColor);
-  padding: 50px 30px 50px 30px;
+  padding: 30px 50px 30px;
 
     h2{
       font-size: 2rem;

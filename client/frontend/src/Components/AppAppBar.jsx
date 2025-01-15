@@ -110,6 +110,40 @@ function AppAppBar({ mode, toggleColorMode }) {
     }
   };
 
+
+  const handleSignupClick = () => {
+    if (!isLoggedIn) {
+      navigate('/signup'); // Navigate to login page if not logged in
+    } else {
+      handleLogout(); // Log out if already logged in
+    }
+  };
+
+
+  const handleAboutUsClick = () => {
+    if (!isLoggedIn) {
+      navigate('/about'); // Navigate to login page if not logged in
+    } else {
+      handleLogout(); // Log out if already logged in
+    }
+  };
+
+  const handleContactClick = () => {
+    if (!isLoggedIn) {
+      navigate('/contactus'); // Navigate to login page if not logged in
+    } else {
+      handleLogout(); // Log out if already logged in
+    }
+  };
+
+  const handleServiceClick = () => {
+    if (!isLoggedIn) {
+      navigate('/service'); // Navigate to login page if not logged in
+    } else {
+      handleLogout(); // Log out if already logged in
+    }
+  };
+
   return (
     <div>
       <AppBar
@@ -171,17 +205,17 @@ function AppAppBar({ mode, toggleColorMode }) {
                     Home
                   </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => scrollToSection('faq')} sx={{ py: '6px', px: '12px' }}>
+                <MenuItem onClick={handleAboutUsClick} sx={{ py: '6px', px: '12px' }}>
                   <Typography variant="body2" color="text.primary">
                     About Us
                   </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => scrollToSection('faq')} sx={{ py: '6px', px: '12px' }}>
+                <MenuItem onClick={handleServiceClick} sx={{ py: '6px', px: '12px' }}>
                   <Typography variant="body2" color="text.primary">
                     Services
                   </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => scrollToSection('faq')} sx={{ py: '6px', px: '12px' }}>
+                <MenuItem onClick={handleContactClick} sx={{ py: '6px', px: '12px' }}>
                   <Typography variant="body2" color="text.primary">
                     Contact Us
                   </Typography>
@@ -202,7 +236,7 @@ function AppAppBar({ mode, toggleColorMode }) {
                 >
                   {isLoggedIn ? 'Log out' : 'Log in'} {/* Show 'Log out' if logged in, else 'Log in' */}
                 </Button>
-                <Button variant="contained" color="primary" onClick={() => scrollToSection('contact')} sx={{ minWidth: '120px', p: '4px' }}>
+                <Button variant="contained" color="primary" onClick={handleSignupClick} sx={{ minWidth: '120px', p: '4px' }}>
                   Sign up
                 </Button>
               </Box>

@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 import LoadingScreen from '../Components/LoadingScreen';
+import { Box, Typography } from '@mui/material';
 
 function Login() {
     const [loginInfo, setLoginInfo] = useState({
@@ -19,7 +20,6 @@ function Login() {
     const redirectTo = location.state?.redirectTo || '/';
 
     useEffect(() => {
-        // Check if user is logged in by checking the presence of the token in localStorage
         const token = localStorage.getItem('token');
         if (token) {
             setIsLoggedIn(true);
@@ -50,19 +50,17 @@ function Login() {
                 body: JSON.stringify(loginInfo)
             });
             const result = await response.json();
-            const { success, message, jwtToken, userId, name,email, error } = result; // Use userId instead of name or user._id
+            const { success, message, jwtToken, userId, name, email, error } = result;
 
             if (success) {
                 handleSuccess(message);
                 localStorage.setItem('token', jwtToken);
-                localStorage.setItem('loggedInUserId', userId); // Store userId separately
-                localStorage.setItem('loggedInUserName', name); // Store username separately
-                localStorage.setItem('loggedInUserEmail', email); // Store email separately
-                // Set logged in state
+                localStorage.setItem('loggedInUserId', userId);
+                localStorage.setItem('loggedInUserName', name);
+                localStorage.setItem('loggedInUserEmail', email);
                 setIsLoggedIn(true);
 
                 setTimeout(() => {
-                    // Navigate to the page based on the `redirectTo` value
                     navigate(redirectTo);
                 }, 5000);
             } else if (error) {
@@ -76,64 +74,62 @@ function Login() {
         }
     };
 
-    // const handleLogout = () => {
-    //     // Clear user data from localStorage and update the state
-    //     localStorage.removeItem('token');
-    //     localStorage.removeItem('loggedInUser');
-    //     setIsLoggedIn(false);
-    //     navigate('/'); // Redirect to the home page or login page
-    // };
-
     return (
-        <Card className='container'>
-
-
-            {isLoggedIn ? (
-                <div style={{ textAlign: 'center', marginTop: 20 }}>
-                    <h1 >{isLoggedIn ? 'Welcome, ' + localStorage.getItem('loggedInUserName') : 'Login'}</h1>
-                    <LoadingScreen />
-                </div>
-            ) : (
-                <form onSubmit={handleLogin}>
-                    <div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh',}}>
+            <Card sx={{ padding: 3, width: '100%', maxWidth: 400 }}>
+                {isLoggedIn ? (
+                    <Box sx={{ textAlign: 'center', marginTop: 2 }}>
+                        <Typography variant="h5">
+                            {`Welcome, ${localStorage.getItem('loggedInUserName')}`}
+                        </Typography>
+                        <LoadingScreen />
+                    </Box>
+                ) : (
+                    <form onSubmit={handleLogin}>
+                        <Typography variant="h4" gutterBottom align="center">Login</Typography>
+                        
                         <TextField
                             id="email"
                             label="Email"
                             variant="outlined"
                             onChange={handleChange}
-                            type='email'
-                            name='email'
+                            type="email"
+                            name="email"
                             value={loginInfo.email}
                             required
-                            sx={{ width: '100%' }}
+                            fullWidth
+                            sx={{ mb: 2 }}
                         />
-                    </div>
-                    <br />
-                    <div>
+                        
                         <TextField
                             id="password"
                             label="Password"
                             variant="outlined"
                             onChange={handleChange}
-                            type='password'
-                            name='password'
+                            type="password"
+                            name="password"
                             value={loginInfo.password}
                             required
-                            sx={{ width: '100%' }}
+                            fullWidth
+                            sx={{ mb: 2 }}
                         />
-                    </div>
-                    <br />
-                    <Button type='submit' variant="contained">Login</Button>
-                    <br />
-                    <br />
-                    <div>Doesn't have an account?
-                        <Link to="/signup">Signup</Link>
-                    </div>
-                </form>
-            )}
+                        
+                        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mb: 2 }}>
+                            Login
+                        </Button>
 
-            <ToastContainer />
-        </Card>
+                        <Box sx={{ textAlign: 'center' }}>
+                            <Typography variant="body2">
+                                Doesn&apos;t have an account?{' '}
+                                <Link to="/signup">Signup</Link>
+                            </Typography>
+                        </Box>
+                    </form>
+                )}
+
+                <ToastContainer />
+            </Card>
+        </Box>
     );
 }
 

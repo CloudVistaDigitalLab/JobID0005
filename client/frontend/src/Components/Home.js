@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
 import Badge from '@mui/material/Badge';
-import { Button, Typography, Box, Grid, Paper, Container, Tab, Tabs } from '@mui/material';
+import { Button, Typography, FormHelperText, Box, Grid, Paper, Container, Tab, Tabs, Modal, TextField, FormControl, InputLabel, Select, MenuItem, Checkbox, FormControlLabel, colors } from '@mui/material';
 import axios from 'axios';
+
+import { jwtDecode } from 'jwt-decode';
 
 function Home() {
     const [clientData, setClientData] = useState([]);
@@ -14,17 +16,264 @@ function Home() {
     const [userName, setUserName] = useState('');
     const [userEmail, setUserEmail] = useState('');
     const [value, setValue] = React.useState(0);
+    const [open, setOpen] = useState(false);
+    const [paymentId, setPaymentId] = useState('');
+    const [userId, setUserId] = useState(null);
+    const [payments, setPayments] = useState([]);
 
+
+    const reasons = [
+        'High premiums',
+        'Found a better plan elsewhere',
+        'No longer need insurance',
+        'Dissatisfied with customer service',
+        'Coverage not sufficient',
+        'Financial difficulties',
+        'Switching to a different provider',
+        'Policy terms are not clear',
+        'Unexpected fees or charges',
+        'Other reasons',
+    ];
+
+
+    // const handleOpen = (paymentId) => {
+    //     setPaymentId(paymentId);  // Store paymentId in the state
+    //     setOpen(true);
+    // };
+
+
+    useEffect(() => {
+        // Fetch the payments from the backend API
+        const fetchPayments = async () => {
+            try {
+                const response = await axios.get('/api/payments');
+                setPayments(response.data);
+            } catch (error) {
+                console.error('Error fetching payments:', error);
+            }
+        };
+
+        fetchPayments();
+    }, []);
+
+    const handleOpen = (paymentId) => {
+        console.log('Unsubscribe Payment ID:', paymentId); // This should log the ID
+        setPaymentId(paymentId);  // Store paymentId in the state
+        setOpen(true); // Open the modal or proceed with the unsubscribe logic
+    };
+
+
+    const handleClose = () => setOpen(false);
+    // unsubscribe
+
+    const [unsubscribeDetails, setUnsubscribeDetails] = useState({
+        username: '',
+        email: '',
+        contactNumber: '',
+        identificationNumber: '',
+        reason: '',
+        reasonDescription: '',
+        subscriptionEndDate: '',
+    });
+
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [paymentSuccess, setPaymentSuccess] = useState(false);
+    const [selectedUsername, setSelectedUsername] = useState('')
+    const [selectedEmail, setSelectedEmail] = useState('')
+    const [selectedContactNumber, setSelectedContactNumber] = useState('')
+    const [selectedIdentificationNumber, setSelectedIdentificationNumber] = useState('')
+    const [selectedReason, setSelectedReason] = useState('');
+    const [reasonDescription, setReasonDescription] = useState('');
+
+
+
+
+    const handleUnsubscribe = async (confirm) => {
+        if (!confirm) {
+            handleClose();
+            return;
+        }
+    
+        if (!selectedReason) {
+            alert('Please select a reason for unsubscribing.');
+            return;
+        }
+    
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found, user is not authenticated');
+            setLoading(false);
+            return;
+        }
+    
+        try {
+            const decodedToken = jwtDecode(token);
+            const userId = decodedToken._id;
+    
+            const response = await axios.get(`http://localhost:4000/api/payments/${paymentId}`);
+            const paymentData = response.data;
+            const subscriptionEndDate = paymentData.paymentInfo.subscriptionEndDate;
+    
+            if (!subscriptionEndDate) {
+                console.error('No subscription end date found');
+                setLoading(false);
+                return;
+            }
+    
+            const unsubscribeData = {
+                userId,
+                paymentId,
+                subscriptionEndDate,
+                reason: selectedReason || 'Reason not provided',
+                clientInfo: paymentData.clientInfo,
+                vehicleDetails: paymentData.vehicleDetails,
+                paymentInfo: paymentData.paymentInfo,
+            };
+    
+            const unsubscribeResponse = await axios.post('http://localhost:4000/api/unsubscribe', unsubscribeData);
+    
+            if (unsubscribeResponse.data.success) {
+                await axios.delete(`http://localhost:4000/api/delete/${paymentId}`);
+                console.log('Unsubscribed successfully');
+                
+                // Send confirmation email
+                sendEmail(paymentData.clientInfo.emailAddress, {
+                    subscriptionEndDate,
+                    reason: selectedReason || 'Reason not provided',
+                    clientInfo: paymentData.clientInfo,
+                    vehicleDetails: paymentData.vehicleDetails,
+                    paymentInfo: paymentData.paymentInfo,
+                });
+    
+                setLoading(false);
+                handleClose();
+                fetchPlansDetails();
+                window.location.reload();
+            } else {
+                console.error('Error during unsubscribe process');
+                setLoading(false);
+            }
+    
+        } catch (error) {
+            console.error('Error during unsubscribe process:', error);
+            setLoading(false);
+        }
+    };
+    
+
+
+
+    // unsubscribe end
+
+
+    const sendEmail = (email, details) => {
+        const { subscriptionEndDate, reason, clientInfo, vehicleDetails, paymentInfo } = details;
+    
+        const emailData = {
+            email: email,
+            message: `Subject: Unsubscription Confirmation
+    
+    Dear ${clientInfo.fullName},
+    
+    We are writing to confirm that your subscription with Vehicle Insurance Co. has been successfully canceled. Below are the details of your subscription and payment for your reference:
+    
+    ---
+    
+    **Reason for Unsubscribing: ${reason}
+    
+     **Subscription Details:**
+    - Subscription End Date: ${subscriptionEndDate}
+    
+    ### Client Information:
+    - Full Name:** ${clientInfo.fullName}
+    - Date of Birth: ${clientInfo.dateOfBirth}
+    - Identification Number: ${clientInfo.identificationNumber}
+    - Contact Number: ${clientInfo.contactNumber}
+    - Email Address: ${clientInfo.emailAddress}
+    - Permanent Address: ${clientInfo.permanentAddress}
+    
+    ### Vehicle Details:
+    - Registration Number: ${vehicleDetails.registrationNumber}
+    - Model: ${vehicleDetails.model}
+    - Color: ${vehicleDetails.color}
+    - Type: ${vehicleDetails.type}
+    - Chassis Number: ${vehicleDetails.chassisNumber}
+    - Engine Capacity: ${vehicleDetails.engineCapacity}
+    - Fuel Type: ${vehicleDetails.fuelType}
+    
+    ### Payment Information:
+    - Card Holder Name: ${paymentInfo.cardHolderName}
+    - Card Number: ${paymentInfo.cardNumber.replace(/\d{12}/, '************')}  
+    - Expiry Date: **/**
+    - CVV: ***  
+    - Price: ${paymentInfo.price}
+    - Payment Date: ${paymentInfo.paymentDate}
+    - Subscription Status: ${paymentInfo.isExpired ? 'Expired' : 'Active'}
+    - Subscription Status: ${paymentInfo.subscriptionEndDate}
+    
+    ---
+    
+    Please note, this email serves as an official confirmation of your unsubscription. If you have any further questions or require assistance, feel free to contact our customer support team.
+    
+    We value your feedback and would greatly appreciate it if you could share your thoughts with us to help improve our services in the future.
+    
+    Thank you for being with us, and we wish you all the best.
+    
+    Warm regards,  
+    The Finance Team 
+    Vehicle Insurance Co.  
+    
+    ---
+    
+    **Note: This is an automated email. Please do not reply to this message.
+    `,
+        };
+    
+        fetch('http://localhost:4000/api/send-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(emailData),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Email sent successfully:', data);
+            })
+            .catch((error) => {
+                console.error('Error sending email:', error);
+            });
+    };
+    
+
+
+    const onDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:4000/api/delete/${id}`);
+            fetchPlansDetails();
+
+        } catch (error) {
+            console.error('Error deleting item:', error);
+
+        }
+    };
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
 
-    const handleNavigation = (path) => {
-        navigate(path);
+    const handleNavigation = (id) => {
+        navigate(`/pay-insurance/${id}`);
     };
+    
 
     useEffect(() => {
+        fetchPlansDetails();
+    }, []);
+
+    const fetchPlansDetails = async () => {
         console.log('LocalStorage:', localStorage);
 
         const userId = localStorage.getItem('loggedInUserId');
@@ -37,20 +286,20 @@ function Home() {
         console.log('User ID:', userId);
 
         if (userId) {
-            axios.get(`http://localhost:4000/api/payments/non-expired/${userId}`)
-                .then(response => {
-                    setClientData(response.data);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-
-                });
+            try {
+                const response = await axios.get(`http://localhost:4000/api/payments/non-expired/${userId}`);
+                setClientData(response.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         } else {
             handleError('User ID not found');
         }
-    }, []);
+    };
 
-
+    const handleError = (message) => {
+        console.error(message); // Handle error appropriately, maybe show an alert or toast
+    };
 
     useEffect(() => {
         console.log('LocalStorage:', localStorage);
@@ -255,7 +504,6 @@ function Home() {
                     </Box>
 
 
-                    {/* Conditionally render content based on the active tab */}
                     {value === 0 && (
                         <div style={{ padding: '20px' }}>
                             <Typography variant="h4" sx={{ marginBottom: 2 }}>
@@ -268,31 +516,64 @@ function Home() {
                                 </Typography>
                             ) : (
                                 <Grid container spacing={4} sx={{ marginTop: 0 }}>
-                                    {clientData.map((client, index) => (
-                                        <Grid item xs={12} sm={6} md={4} key={index}>
-                                            <Paper sx={{ padding: 2, marginBottom: 2 }}>
-                                                <Typography variant="h5">Owner Information</Typography>
-                                                <Typography>Name: {client.clientInfo.fullName}</Typography>
-                                                <Typography>Email: {client.clientInfo.emailAddress}</Typography>
-                                                <Typography>Contact Number: {client.clientInfo.contactNumber}</Typography>
-                                                <Typography>Address: {client.clientInfo.permanentAddress}</Typography>
-                                                <br />
-                                                <Typography variant="h5">Vehicle Details</Typography>
-                                                <Typography>Registration Number: {client.vehicleDetails.registrationNumber}</Typography>
-                                                <Typography>Model: {client.vehicleDetails.model}</Typography>
-                                                <Typography>Color: {client.vehicleDetails.color}</Typography>
-                                                <Typography>Type: {client.vehicleDetails.type}</Typography>
-                                                <Typography>Chassis Number: {client.vehicleDetails.chassisNumber}</Typography>
-                                                <br />
-                                                <Typography variant="h5">Payment Information</Typography>
-                                                <Typography>Price: {client.paymentInfo.price}</Typography>
-                                            </Paper>
-                                        </Grid>
-                                    ))}
+                                    {clientData.map((client, index) => {
+                                        // Ensure paymentInfo is available in each client object
+                                        const paymentInfo = client.paymentInfo; // Access paymentInfo directly
+
+                                        return (
+                                            <Grid item xs={12} sm={6} md={4} key={index}>
+                                                <Paper sx={{ padding: 2, marginBottom: 2 }}>
+                                                    <Typography variant="h5">Owner Information</Typography>
+                                                    <Typography>Name: {client.clientInfo.fullName}</Typography>
+                                                    <Typography>Email: {client.clientInfo.emailAddress}</Typography>
+                                                    <Typography>Contact Number: {client.clientInfo.contactNumber}</Typography>
+                                                    <Typography>Address: {client.clientInfo.permanentAddress}</Typography>
+                                                    <br />
+                                                    <Typography variant="h5">Vehicle Details</Typography>
+                                                    <Typography>Registration Number: {client.vehicleDetails.registrationNumber}</Typography>
+                                                    <Typography>Model: {client.vehicleDetails.model}</Typography>
+                                                    <Typography>Color: {client.vehicleDetails.color}</Typography>
+                                                    <Typography>Type: {client.vehicleDetails.type}</Typography>
+                                                    <Typography>Chassis Number: {client.vehicleDetails.chassisNumber}</Typography>
+                                                    <br />
+                                                    <Typography variant="h5">Payment Information</Typography>
+                                                    <Typography>Price: {paymentInfo?.price || "N/A"}</Typography> {/* Show N/A if price is missing */}
+
+                                                    {/* Only show unsubscribe button if paymentInfo is available */}
+                                                    {paymentInfo ? (
+                                                        <>
+                                                            {/* <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                sx={{ marginTop: 2 }}
+                                                                onClick={() => onDelete(client._id)} // Pass the ObjectId here
+                                                            >
+                                                                Unsubscribe The plan
+                                                            </Button> */}
+                                                            <Button
+                                                                variant="contained"
+                                                                color="primary"
+                                                                sx={{ marginTop: 2 }}
+                                                                onClick={() => handleOpen(client._id)}
+                                                            >
+                                                                Unsubscribe from Insurance Plan
+                                                            </Button>
+                                                        </>
+                                                    ) : (
+                                                        <Typography sx={{ color: 'text.secondary', marginTop: 2 }}>
+                                                            No payment information available.
+                                                        </Typography>
+                                                    )}
+                                                </Paper>
+                                            </Grid>
+                                        );
+                                    })}
                                 </Grid>
                             )}
                         </div>
                     )}
+
+
 
                     {value === 1 && (
                         <div style={{ padding: '20px' }}>
@@ -303,27 +584,40 @@ function Home() {
                                 <Typography variant="h6" sx={{ color: 'text.secondary' }}>
                                     No claimes had been added...
                                 </Typography>
-                            ) :(
+                            ) : (
                                 <Grid container spacing={4} sx={{ marginTop: 0 }}>
-                                {claimtData.map((claim, index) => (
-                                    <Grid item xs={12} sm={6} md={4} key={index}>
-                                        <Paper sx={{ padding: 2, marginBottom: 2 }}>
-                                            <Typography variant="h5">Owner Information</Typography>
-                                            <Typography>Name: {claim.fullName}</Typography> {/* Corrected */}
-                                            <Typography>Email: {claim.email}</Typography> {/* Assuming claim has an email */}
-                                            <Typography>Contact Number: {claim.contactNumber}</Typography>
-                                            <Typography>Address: {claim.address}</Typography>
-                                            <br />
-                                            <Typography variant="h5">Claim Details</Typography>
-                                            <Typography>Claim ID: {claim.claimId}</Typography>
-                                            <Typography>Policy Number: {claim.policyNumber}</Typography>
-                                            <Typography>Incident Date: {claim.incidentDate}</Typography>
-                                            <Typography>Claim Amount: {claim.claimAmount}</Typography>
-                                            <Typography>Description: {claim.description}</Typography>
-                                        </Paper>
-                                    </Grid>
-                                ))}
-                            </Grid>
+                                    {claimtData.map((claim, index) => (
+                                        <Grid item xs={12} sm={6} md={4} key={index}>
+                                            <Paper sx={{ padding: 2, marginBottom: 2 }}>
+                                                <Typography variant="h5">Owner Information</Typography>
+                                                <Typography>Name: {claim.fullName}</Typography> {/* Corrected */}
+                                                {/* Assuming claim has an email */}
+                                                <Typography>Contact Number: {claim.contactNumber}</Typography>
+                                                <Typography>PolicyNumber: {claim.policyNumber}</Typography>
+                                                <br />
+                                                <Typography variant="h5">Claim Details</Typography>
+                                                <Typography>Claim ID: {claim.claimId}</Typography>
+                                                <Typography>Policy Number: {claim.policyNumber}</Typography>
+                                                <Typography>Incident Date: {claim.incidentDate}</Typography>
+                                                <Typography>Claim Amount: {claim.claimAmount}</Typography>
+                                                <Typography>Description: {claim.description}</Typography>
+                                                <Grid container spacing={0} sx={{ marginTop: '10px' }}>
+                                                    {claim.uploadedURLs.map((imageUrl, index) => (
+                                                        <Grid item xs={12} sm={6} md={4} key={index}>
+
+                                                            <img
+                                                                src={imageUrl}
+                                                                alt={`Claim Image ${index + 1}`}
+                                                                style={{ width: '110px', height: '90px', borderRadius: '8px' }}
+                                                            />
+
+                                                        </Grid>
+                                                    ))}
+                                                </Grid>
+                                            </Paper>
+                                        </Grid>
+                                    ))}
+                                </Grid>
                             )}
                         </div>
                     )}
@@ -347,29 +641,36 @@ function Home() {
                                 </Typography>
                             ) : (
                                 <Grid container spacing={4} sx={{ marginTop: 0 }}>
-                                {expiredPlans.map((client, index) => (
-                                    <Grid item xs={12} sm={6} md={4} key={index}>
-                                        <Paper sx={{ padding: 2, marginBottom: 2 }}>
-                                            <Typography variant="h5">Owner Information</Typography>
-                                            <Typography>Name: {client.clientInfo.fullName}</Typography>
-                                            <Typography>Email: {client.clientInfo.emailAddress}</Typography>
-                                            <Typography>Contact Number: {client.clientInfo.contactNumber}</Typography>
-                                            <Typography>Address: {client.clientInfo.permanentAddress}</Typography>
-                                            <br />
-                                            <Typography variant="h5">Vehicle Details</Typography>
-                                            <Typography>Registration Number: {client.vehicleDetails.registrationNumber}</Typography>
-                                            <Typography>Model: {client.vehicleDetails.model}</Typography>
-                                            <Typography>Color: {client.vehicleDetails.color}</Typography>
-                                            <Typography>Type: {client.vehicleDetails.type}</Typography>
-                                            <Typography>Chassis Number: {client.vehicleDetails.chassisNumber}</Typography>
-                                            <br />
-                                            <Typography variant="h5">Payment Information</Typography>
-                                            <Typography>Price: {client.paymentInfo.price}</Typography>
-                                            <Button variant="contained" color="primary" sx={{ marginTop: 2 }} onClick={() => handleNavigation('/pay-insurance')}>Renew The Plan</Button>
-                                        </Paper>
-                                    </Grid>
-                                ))}
-                            </Grid>
+                                    {expiredPlans.map((client, index) => (
+                                        <Grid item xs={12} sm={6} md={4} key={index}>
+                                            <Paper sx={{ padding: 2, marginBottom: 2 }}>
+                                                <Typography variant="h5">Owner Information</Typography>
+                                                <Typography>Name: {client.clientInfo.fullName}</Typography>
+                                                <Typography>Email: {client.clientInfo.emailAddress}</Typography>
+                                                <Typography>Contact Number: {client.clientInfo.contactNumber}</Typography>
+                                                <Typography>Address: {client.clientInfo.permanentAddress}</Typography>
+                                                <br />
+                                                <Typography variant="h5">Vehicle Details</Typography>
+                                                <Typography>Registration Number: {client.vehicleDetails.registrationNumber}</Typography>
+                                                <Typography>Model: {client.vehicleDetails.model}</Typography>
+                                                <Typography>Color: {client.vehicleDetails.color}</Typography>
+                                                <Typography>Type: {client.vehicleDetails.type}</Typography>
+                                                <Typography>Chassis Number: {client.vehicleDetails.chassisNumber}</Typography>
+                                                <br />
+                                                <Typography variant="h5">Payment Information</Typography>
+                                                <Typography>Price: {client.paymentInfo.price}</Typography>
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    sx={{ marginTop: 2 }}
+                                                    onClick={() => handleNavigation(client._id)} // Pass the ObjectId here
+                                                >
+                                                    Renew The Plan
+                                                </Button>
+                                            </Paper>
+                                        </Grid>
+                                    ))}
+                                </Grid>
                             )}
                         </div>
                     )}
@@ -465,9 +766,55 @@ function Home() {
                     )}
 
                 </Box>
-
-
-
+                <Modal open={open} onClose={handleClose}>
+                    <Box sx={modalStyle}>
+                        <Typography variant="h6" sx={modalTitleStyle}>
+                            Are you sure you want to unsubscribe the insurance plan?
+                        </Typography>
+                        <Typography variant="body1" sx={{ marginBottom: '20px' }}>
+                            Please select a reason for unsubscribing:
+                        </Typography>
+                        <FormControl fullWidth sx={{ marginBottom: '20px' }}>
+                            <InputLabel id="reason-select-label">Reason</InputLabel>
+                            <Select
+                                labelId="reason-select-label"
+                                value={selectedReason}
+                                onChange={(e) => setSelectedReason(e.target.value)}
+                                label="Reason"
+                            >
+                                <MenuItem value="High premiums">High premiums</MenuItem>
+                                <MenuItem value="Found a better plan elsewhere">Found a better plan elsewhere</MenuItem>
+                                <MenuItem value="No longer need insurance">No longer need insurance</MenuItem>
+                                <MenuItem value="Dissatisfied with customer service">Dissatisfied with customer service</MenuItem>
+                                <MenuItem value="Coverage not sufficient">Coverage not sufficient</MenuItem>
+                                <MenuItem value="Financial difficulties">Financial difficulties</MenuItem>
+                                <MenuItem value="Switching to a different provider">Switching to a different provider</MenuItem>
+                                <MenuItem value="Policy terms are not clear">Policy terms are not clear</MenuItem>
+                                <MenuItem value="Unexpected fees or charges">Unexpected fees or charges</MenuItem>
+                                <MenuItem value="Other reasons">Other reasons</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <Box sx={modalActionsStyle}>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                onClick={() => handleUnsubscribe(false)}
+                                sx={{ width: '120px' }}
+                            >
+                                No
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => handleUnsubscribe(true)}
+                                disabled={loading}
+                                sx={{ width: '120px' }}
+                            >
+                                {loading ? 'Processing...' : 'Yes'}
+                            </Button>
+                        </Box>
+                    </Box>
+                </Modal>
 
                 <ToastContainer />
             </Paper>
@@ -476,5 +823,33 @@ function Home() {
 
     );
 }
+
+const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '100%',
+    maxWidth: '500px',
+    backgroundColor: 'white',
+    borderRadius: '12px',
+    padding: '20px',
+    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+    outline: 'none',
+};
+
+const modalTitleStyle = {
+    fontWeight: '600',
+    fontSize: '20px',
+    marginBottom: '20px',
+    color: 'black', // Corrected to 'color' instead of 'colors'
+};
+
+
+const modalActionsStyle = {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '10px',
+};
 
 export default Home;
