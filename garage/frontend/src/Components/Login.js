@@ -79,10 +79,9 @@ function Login() {
             <Card sx={{ padding: 3, width: '100%', maxWidth: 400 }}>
                 {isLoggedIn ? (
                     <Box sx={{ textAlign: 'center', marginTop: 2 }}>
-                        <Typography variant="h3">
+                        <Typography variant="h5">
                             {`Welcome, ${localStorage.getItem('loggedInUserName')}`}
                         </Typography>
-
                         <LoadingScreen />
                     </Box>
                 ) : (

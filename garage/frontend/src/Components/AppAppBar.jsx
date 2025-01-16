@@ -12,9 +12,9 @@ import { alpha } from '@mui/material';
 
 function AppAppBar({ mode, toggleColorMode }) {
   const [isLoggedIn, setIsLoggedIn] = React.useState(localStorage.getItem('token') ? true : false); // Check localStorage for login status
-  const navigate = useNavigate();
-  const [userName, setUserName] = React.useState('');
+  const [userName, setUserName] = React.useState(''); // Default to empty string
 
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     if (isLoggedIn) {
@@ -25,9 +25,12 @@ function AppAppBar({ mode, toggleColorMode }) {
   }, [isLoggedIn]);
 
   const handleNavigation = (path) => {
-    navigate(path);
+    if (isLoggedIn || path === '/login' || path === '/signup') {
+      navigate(path);
+    } else {
+      navigate('/login');
+    }
   };
-
 
   const handleLogin = () => {
     navigate('/login');
@@ -40,9 +43,9 @@ function AppAppBar({ mode, toggleColorMode }) {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('loggedInUser');
-    localStorage.removeItem('loggedInUserName');
-    setUserName('');
+    localStorage.removeItem('loggedInUserName'); // Remove user name from localStorage
     setIsLoggedIn(false);
+    setUserName(''); // Clear the user name on logout
     navigate('/');
     window.location.reload();
   };
@@ -80,38 +83,19 @@ function AppAppBar({ mode, toggleColorMode }) {
                   : `0 0 1px ${alpha('#2a9d8f', 0.7)}, 1px 1.5px 2px -1px ${alpha('#2a9d8f', 0.65)}, 4px 4px 12px -2.5px ${alpha('#2a9d8f', 0.65)}`,
             })}
           >
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: 'flex',
-                alignItems: 'center',
-                px: 0,
-                gap: 1,
-                color: '#2a9d8f',
-              }}
-            >
+            <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0, gap: 1, color: '#2a9d8f' }}>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>
                 Vehicle Insurance Co.
               </Typography>
             </Box>
 
-            <Box
-              sx={{
-                display: { xs: 'none', md: 'flex' },
-                gap: 0.5,
-                alignItems: 'center',
-              }}
-            >
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5, alignItems: 'center' }}>
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                <MenuItem sx={{
-                  py: '6px', px: '12px', '&:hover': {
-                    backgroundColor: 'transparent', // Remove the hover background color
-                  },
-                }} onClick={(e) => e.preventDefault()}>
-                  <Typography variant="h6" sx={{ textAlign: "center", fontWeight: 'bold' }}>
+                <MenuItem sx={{ py: '6px', px: '12px', '&:hover': { backgroundColor: 'transparent' } }} onClick={(e) => e.preventDefault()}>
+                  <Typography variant="h6" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
                     Welcome,&nbsp;
                   </Typography>
-                  <Typography variant="h6" sx={{ color: '#2a9d8f', textAlign: "center", }}>
+                  <Typography variant="h6" sx={{ color: '#2a9d8f', textAlign: 'center' }}>
                     {userName}
                   </Typography>
                 </MenuItem>
@@ -120,7 +104,11 @@ function AppAppBar({ mode, toggleColorMode }) {
                     Home
                   </Typography>
                 </MenuItem>
-                
+                <MenuItem onClick={() => handleNavigation('/home')} sx={{ py: '6px', px: '12px' }}>
+                  <Typography variant="body2" color="text.primary">
+                    Submit Quotation
+                  </Typography>
+                </MenuItem>
                 <MenuItem onClick={() => handleNavigation('/about')} sx={{ py: '6px', px: '12px' }}>
                   <Typography variant="body2" color="text.primary">
                     About Us
@@ -136,39 +124,20 @@ function AppAppBar({ mode, toggleColorMode }) {
                     Contact Us
                   </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => handleNavigation('/home')} sx={{ py: '6px', px: '12px' }}>
-                  <Typography variant="body2" color="text.primary">
-                    User Profile
-                  </Typography>
-                </MenuItem>
               </Box>
+
               <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
-              <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, ml: 2 }}>
+              <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 5, ml: 2 }}>
                 {isLoggedIn ? (
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleLogout}
-                    sx={{ minWidth: '120px', p: '4px' }}
-                  >
+                  <Button variant="contained" color="primary" onClick={handleLogout} sx={{ minWidth: '120px', p: '4px' }}>
                     Log out
                   </Button>
                 ) : (
                   <>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleLogin}
-                      sx={{ minWidth: '120px', p: '4px' }}
-                    >
+                    <Button variant="contained" color="primary" onClick={handleLogin} sx={{ minWidth: '120px', p: '4px' }}>
                       Log in
                     </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleSignup}
-                      sx={{ minWidth: '120px', p: '4px' }}
-                    >
+                    <Button variant="contained" color="primary" onClick={handleSignup} sx={{ minWidth: '120px', p: '4px' }}>
                       Sign up
                     </Button>
                   </>

@@ -1,13 +1,574 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.container {
+  background-color: #fff;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 800px;
+  padding: 24px;
+  box-shadow: 8px 8px 24px rgba(66, 68, 90, 0.2);
+  margin: 5% auto;
+  justify-content: center;
+  align-items: center;
+}
+.App {
+  text-align: center;
+}
+
+input, 
+textarea, 
+select, 
+button 
+{
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+
+/********** Welcome Page styles **********/
+
+.welcome-container {
+  text-align: center;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #264653;
+}
+
+/* Navigation bar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #2a9d8f;
+  color: #fff;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 10;
+  flex-wrap: wrap; 
+  overflow: hidden;
+}
+
+.navbar h1 {
+  font-size: 1.5rem;
+  color: #fff;
+  margin: 0; 
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin: 0;
+  flex-wrap: wrap; 
+  padding: 0; 
+}
+
+.nav-links li {
+  cursor: pointer;
+  color: #fff;
+  font-weight: bold;
+  display: inline;
+}
+
+.nav-links li a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav-links li:hover,
+.nav-links button:hover {
+  text-decoration: underline;
+}
+
+.nav-links li,
+.login-button,
+.signup-button {
+  white-space: nowrap; 
+}
+
+
+.login-button,
+.signup-button {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-button:hover,
+.signup-button:hover {
+  background-color: #f4a261;
+}
+
+
+@media (max-width: 768px) {
+  .navbar ul {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .login-button,
+  .signup-button {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+}
+
+/* End of Navigation bar styles */
+
+
+.welcome-container main {
+  margin: auto;
+  .welcome-text h1{
+    font-size: 3rem;
+    margin-top: 120px;
+  }
+  .welcome-text p{
+    font-size: 1.2rem;
+  }
+
+
+.hero-section {
+  width: 1000px;
+  margin: auto;
+  padding: 3rem 1.5rem;
+  background-color: #264653;
+  color: #fff;
+  border-radius: 20px;
+}
+
+.hero-section h2 {
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+.hero-section p {
+  font-size: 1rem;
+  margin: 1rem 3rem;
+}
+}
+
+
+/* Plans Section */
+
+.plans-section{
+  height: auto;
+  background-color: var(--whiteColor);
+  padding: 30px 50px 30px;
+
+    h2{
+      font-size: 2rem;
+    }
+      
+    .swiper{
+      padding: 20px;
+      max-height: 500px;
+      width: 100%;
+      margin: auto;
+      align-items: center;
+      
+      .slide-container{
+        width: 300px;
+        height: 400px;
+        margin: auto;
+        display: flex;
+        background-color: #ffffff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 5%;
+        transition: all 0.7s ease-in-out;
+        align-items: center;
+        justify-content: center;
+
+        img{
+          width: 300px;
+          height: 400px;
+          object-fit:cover;
+          align-items: center;
+          justify-content: center;
+          margin: auto;
+          border-radius: 5%;
+        }
+
+        h3{
+          justify-content: center;
+          font-family: Arial, Helvetica, sans-serif;
+          font-size: 20px;
+          padding: 10px;
+          color: var(--blueColor);
+          display: none;
+        }
+        p{
+          margin: 15px;
+          display: none;
+        }
+        button{
+          width: 150px;
+          text-transform: capitalize;
+          margin: auto;
+          cursor: pointer;
+          display: none;
+        }
+
+        &:hover {
+          background-color: #2a9d8f;
+          display: inline-block;
+          justify-content: center;
+          align-items: center;
+          h3{
+            display: flex;
+            font-size: 20px;
+            padding: 10px;
+          }
+          img{
+            display: none;
+          }
+          p{
+            align-items: center;
+            display: flex;
+            color: var(--whiteColor);
+            padding: 5px;
+          }
+          button{
+            display: block;
+            background-color:#ff9800;
+            
+          }
+        }
+      }
+    }
+
+  @media screen and (max-width: 850px) {
+
+    height: auto;
+    background-color: var(--whiteColor);
+    padding: 80px 10px 100px 10px;
+          
+    h2 {
+      font-size: 35px;
+    }
+    .swiper{
+      padding: 20px;
+      max-height: 240px;
+          
+      .container{
+        width: 200px;
+        height: 200px;
+        img{
+          width: 150px;
+        }
+      }
+    }
+  }
+      
+  @media screen and (max-width: 536px) {
+    height: auto;
+    background-color: var(--whiteColor);
+    padding: 60px 5px 70px 5px;
+        
+    h2 {
+      font-size: 30px;
+      padding: 40px 0;
+      margin: 0;
+    }
+    .swiper{
+      max-height: 180px;
+        
+      .container{
+        width: 160px;
+        height: 160px;
+        img{
+            width: 100px;
+        }
+      }
+    }
+  }
+}
+
+/* end of Plans Section */
+
+.features-section {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  gap: 10px;
+  padding: 2rem 1rem;
+  background-color: #f0f2f5;
+}
+
+.feature {
+  max-width: 300px;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.feature h3 {
+  color: #2a9d8f;
+}
+
+/********** End of Welcome Page styles **********/
+
+
+
+/********** Login & Signup Page styles **********/
+
+.signin-signup-container {
+  background-color: #fff;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 700px;
+  padding: 24px;
+  box-shadow: 8px 8px 24px rgba(66, 68, 90, 0.2);
+  margin: 5% auto;
+  justify-content: center;
+  align-items: center;
+
+  .content{
+    padding: 1rem;
+  }
+}
+
+input, 
+textarea, 
+select, 
+button 
+{
+  padding: 10px;
+  max-width: 800px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease-in-out;}
+
+  button:hover{
+    background-color: #06796c; 
+  }
+
+
+/********** End of Login & Signup Page styles **********/
+
+
+.cta-button {
+  background-color: #e9c46a;
+  color: #264653;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cta-button:hover {
+  background-color: #f4a261;
+}
+
+
+.claim-section, .payment-section {
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.claim-section h3, .payment-section h3 {
+  color: #2a9d8f;
+}
+
+.claim-section form, .payment-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.claim-section input, .payment-section input, 
+.claim-section textarea, .payment-section select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.claim-section button, .payment-section button {
+  padding: 0.75rem;
+  background-color: #e9c46a;
+  color: #264653;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.claim-section button:hover, .payment-section button:hover {
+  background-color: #f4a261;
+}
+
+
+.footer {
+  padding: 1.5rem;
+  background-color: #2a9d8f;
+  color: #fff;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.footer p {
+  margin: 0.5rem 0;
+}
+
+
+button{
+  background-color:  #2a9d8f;
+  border: none;
+  font-size:20px;
+  color:white;
+  border-radius: 5px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+/* Updated styling for .claim-section to match .payment-section */
+
+.claim-section {
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 600px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.claim-section h3 {
+  color: #2a9d8f;
+}
+
+.claim-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.claim-form input,
+.claim-form textarea {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #333;
+}
+
+
+.submit-button:hover:enabled {
+  background-color: #f4a261;
+}
+
+/* Error message styling */
+.error-message {
+  color: red;
+  text-align: center;
+  font-weight: bold;
+  
+}
+
+/* Spinner styling */
+.spinner {
+  margin: 20px auto;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #f0a500;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+/* Modal styling */
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.modal-content p {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #f0a500;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+
+.modal-content button:hover {
+  background-color: #d18c00;
+}
+
+/* PlanDetails.css */
+
+.plan-details {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.plan-details h2 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.plan-details p {
+  color: #555;
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.pay-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.pay-button:hover {
+  background-color: #0056b3;
 }

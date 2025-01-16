@@ -26,7 +26,7 @@ function ContactUs() {
         setStatus(''); // Reset the previous status
 
         try {
-            const response = await axios.post('http://localhost:4000/api/send-email/contactUs', formData);
+            const response = await axios.post('http://localhost:4005/api/send-email/contactUs', formData);
             if (response.status === 200) {
                 setStatus('success');
                 setFormData({
