@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
-import ToggleColorMode from './toggle-mode/ToggleColorMode';
+import ToggleColorMode from '../features/toggle-mode/ToggleColorMode';
 import { alpha } from '@mui/material';
 
 import { useNavigate } from 'react-router-dom';
