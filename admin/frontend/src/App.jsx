@@ -70,8 +70,17 @@ const NAVIGATION = [
         Dashboard
       </span>
     ),
-    icon: <DashboardIcon />,
-    link: '/dashboard'
+    icon: (
+      <span
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          localStorage.setItem('currentPath', '/dashboard')
+          window.location.href = '/dashboard';
+        }}
+      >
+        <DashboardIcon />
+      </span>
+    ),
   },
   {
     segment: 'claims',
@@ -86,7 +95,17 @@ const NAVIGATION = [
         Claims
       </span>
     ),
-    icon: <DescriptionIcon />,
+    icon: (
+      <span
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          localStorage.setItem('currentPath', '/claims')
+          window.location.href = '/claims';
+        }}
+      >
+        <DescriptionIcon />
+      </span>
+    ),
   },
   {
     segment: 'garage',
@@ -101,7 +120,17 @@ const NAVIGATION = [
         Garage Quotations
       </span>
     ),
-    icon: <GarageIcon />,
+    icon: (
+      <span
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          localStorage.setItem('currentPath', '/garage')
+          window.location.href = '/garage-quotations';
+        }}
+      >
+        <GarageIcon />
+      </span>
+    ),
   },
   {
     kind: 'header',
@@ -120,7 +149,17 @@ const NAVIGATION = [
         Admin Registration
       </span>
     ),
-    icon: <AppRegistrationIcon />,
+    icon: (
+      <span
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          localStorage.setItem('currentPath', '/admin-reg')
+          window.location.href = '/admin-registration';
+        }}
+      >
+        <AppRegistrationIcon />
+      </span>
+    ),
   },
 ];
 
