@@ -22,11 +22,28 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
+import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 
 function Row(props) {
     const { row } = props;
     const [open, setOpen] = React.useState(false);
+    const [openImage, setOpenImage] = React.useState(false);
+    const [imageURL, setImageURL] = React.useState(false);
+
+    const handleClickOpenImage = (image) => {
+      setImageURL(image);
+      setOpenImage(true);
+    };
   
+    const handleCloseImage = () => {
+      setOpenImage(false);
+    };
+    const navigate = useNavigate(); 
+
+    const handleNavigation = () => {
+      navigate('/claims'); 
+    };
     return (
       <React.Fragment>
         <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -45,10 +62,6 @@ function Row(props) {
           <TableCell >{row.fullName}</TableCell>
           <TableCell align="center">{row.policyNumber}</TableCell>
           <TableCell align="center">{row.incidentDate.split('T')[0]}</TableCell>
-          <TableCell sx={{display:'flex', gap:1}}>
-            <Button color="success" variant="contained">Accept</Button>
-            <Button color="error" variant="contained">Reject</Button>
-          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -85,12 +98,15 @@ function Row(props) {
                       {row.uploadedURLs.map((image, index) => (
                           <TableCell component="th" scope="row">
                             <img
+                                onClick={()=>handleClickOpenImage(image)}
                                 src={image}
                                 alt={`Uploaded ${index}`}
                                 style={{
-                                    height: "150px",
-                                    objectFit: "cover",
-                                    borderRadius: "4px",
+                                  height: "150px",
+                                  width: "100%",
+                                  objectFit: "cover",
+                                  borderRadius: "4px",
+                                  cursor: 'pointer',
                                 }}
                             />
                           </TableCell>
@@ -106,6 +122,36 @@ function Row(props) {
             </Collapse>
           </TableCell>
         </TableRow>
+        <Dialog
+        open={openImage}
+        onClose={handleCloseImage}
+        sx={{width: '100%', height: '100%'}}
+        fullScreen
+      >
+        <DialogTitle sx={{display:'flex', justifyContent:'space-between', alignItem:'center'}}>
+          A Image for {row.claimId}
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={handleCloseImage}
+            aria-label="close"
+            sx={{width: '30px', height: '30px'}}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+        <img
+          src={imageURL}
+          alt={`Uploaded by ${row.fullname}`}
+          style={{
+            width: "100%",
+            objectFit: "cover",
+            borderRadius: "4px",
+          }}
+        />
+        </DialogContent>
+      </Dialog>
       </React.Fragment>
     );
 }
@@ -131,7 +177,7 @@ export default function Dashboard() {
 
   const today = new Date();
   const formattedDate = today.toISOString().split('T')[0];  
-  const todayClaims = allClaims.filter(claim => claim.incidentDate.split('T')[0] === "2025-01-02");
+  const todayClaims = allClaims.filter(claim => claim.createdAt.split('T')[0] === formattedDate);
 
   const createPastDatesArray = (datesCount) => {
     const datesArray = [];
@@ -206,6 +252,12 @@ export default function Dashboard() {
     setOpenPredict(false);
   };
 
+  const navigate = useNavigate();
+
+  const handleNavigation = (to) => {
+    navigate(to);
+  };
+
   return (
     <Box sx={{px:2, py:1}}>
       <Box>
@@ -219,7 +271,7 @@ export default function Dashboard() {
           <Typography variant="h5" color="initial" sx={{fontWeight:700, pb:1}}>
             Recent Claims
           </Typography>
-          <Button variant="contained" color="primary" sx={{width:'150px'}}>
+          <Button variant="contained" color="primary" sx={{width:'150px'}} onClick={()=>{handleNavigation("/claims"); localStorage.setItem("currentPath", "/claims")}}>
             View All Claims
           </Button>
         </Box>
@@ -233,7 +285,6 @@ export default function Dashboard() {
                 <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }}>Vehicle Owner</TableCell>
                 <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }} align="center">Policy Number</TableCell>
                 <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }} align="center">Incident Date</TableCell>
-                <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }} align="center">Options</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -245,26 +296,26 @@ export default function Dashboard() {
         </TableContainer>
       </Box>
       <Divider/>
-      <Box sx={{my:2, display:'flex', justifyContent:'space-between'}}>
-        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center'}}>
+      <Box sx={{my:2, display:'flex', justifyContent:'space-between', gap:3}}>
+        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center', width:'25%'}}>
           <Typography variant="h5"># All Clams</Typography>
           <Typography variant="h1" sx={{color:'#2a9d8f'}}>{allClaims.length}</Typography>
         </Card>
-        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center'}}>
+        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center', width:'25%'}}>
           <Typography variant="h5"># Pending Clams</Typography>
           <Typography variant="h1" sx={{color:'#2a9d8f'}}>{pendingClaim.length}</Typography>
         </Card>
-        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center'}}>
+        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center', width:'25%'}}>
           <Typography variant="h5"># Accepted Clams</Typography>
           <Typography variant="h1" sx={{color:'#2a9d8f'}}>{acceptedClaim.length}</Typography>
         </Card>
-        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center'}}>
+        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center', width:'25%'}}>
           <Typography variant="h5"># Rejected Clams</Typography>
           <Typography variant="h1" sx={{color:'#2a9d8f'}}>{rejectedClaim.length}</Typography>
         </Card>
       </Box>
       <Divider/>
-      <Box sx={{mt:2, display:'flex', justifyContent:'space-between', gap:3}}>
+      <Box sx={{my:2, display:'flex', justifyContent:'space-between', gap:3}}>
         <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center', width:'50%'}}>
           <Typography variant="h5">No. of Claims for Today</Typography>
           <Typography variant="h1" sx={{color:'#2a9d8f'}}>{todayClaims.length}</Typography>
@@ -282,14 +333,14 @@ export default function Dashboard() {
         sx={{width: '100%', height: '100%'}}
         
       >
-        <DialogTitle sx={{display:'flex', justifyContent:'space-between', alignItem:'center'}}>
+        <DialogTitle sx={{display:'flex', justifyContent:'space-between', alignItem:'center', fontSize:25, fontWeight:700}}>
           No. of Claims Prediction for Tomorrow
           
         </DialogTitle>
         <DialogContent>
           {predictedData?(
-            <Box sx={{mb:1}}>
-              {predictedData.predicted_claims} cliams can be filed by the users tomorrow
+            <Box sx={{mb:1, fontSize:18}}>
+              {Math.round(predictedData.predicted_claims)} claims can be filed by the users tomorrow
             </Box>
           ):(
             <Box sx={{display:'flex', alignItems:'center', gap:2, justifyContent:'center'}}>

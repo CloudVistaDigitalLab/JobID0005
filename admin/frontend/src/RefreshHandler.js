@@ -12,7 +12,8 @@ function RefreshHandler({ setIsAuthenticated, children }) {
 
             const restrictedPaths = ['/', '/login', '/signup'];
             if (restrictedPaths.includes(location.pathname)) {
-                navigate('/adminHome', { replace: true });
+                localStorage.setItem("currentPath", "/dashboard")
+                navigate('/dashboard', { replace: true });
             }
         }
         setIsLoading(false); // Allow rendering once logic is done

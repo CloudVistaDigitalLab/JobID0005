@@ -161,12 +161,12 @@ const transporter = nodemailer.createTransport({
 
 // Endpoint to send email
 exports.sendEmail = async (req, res) => {
-    const { email, message } = req.body;
+    const { email, message, subject } = req.body;
 
     const mailOptions = {
         from: 'geeshanthisera1234@gmail.com',
         to: email,
-        subject: 'Payment Confirmation',
+        subject: subject,
         text: message,
     };
 

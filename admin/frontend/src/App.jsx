@@ -50,6 +50,7 @@ import GarageIcon from '@mui/icons-material/Garage';
 
 import { handleError, handleSuccess } from './utils';
 import ToggleColorMode from './features/toggle-mode/ToggleColorMode';
+import Quotations from './pages/Quotations';
 
 const NAVIGATION = [
   {
@@ -62,14 +63,24 @@ const NAVIGATION = [
       <span
         style={{ cursor: 'pointer' }}
         onClick={() => {
+          localStorage.setItem('currentPath', '/dashboard')
           window.location.href = '/dashboard';
         }}
       >
         Dashboard
       </span>
     ),
-    icon: <DashboardIcon />,
-    link: '/dashboard'
+    icon: (
+      <span
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          localStorage.setItem('currentPath', '/dashboard')
+          window.location.href = '/dashboard';
+        }}
+      >
+        <DashboardIcon />
+      </span>
+    ),
   },
   {
     segment: 'claims',
@@ -77,13 +88,24 @@ const NAVIGATION = [
       <span
         style={{ cursor: 'pointer' }}
         onClick={() => {
+          localStorage.setItem('currentPath', '/claims')
           window.location.href = '/claims';
         }}
       >
         Claims
       </span>
     ),
-    icon: <DescriptionIcon />,
+    icon: (
+      <span
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          localStorage.setItem('currentPath', '/claims')
+          window.location.href = '/claims';
+        }}
+      >
+        <DescriptionIcon />
+      </span>
+    ),
   },
   {
     segment: 'garage',
@@ -91,13 +113,24 @@ const NAVIGATION = [
       <span
         style={{ cursor: 'pointer' }}
         onClick={() => {
+          localStorage.setItem('currentPath', '/garage')
           window.location.href = '/garage-quotations'; 
         }}
       >
         Garage Quotations
       </span>
     ),
-    icon: <GarageIcon />,
+    icon: (
+      <span
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          localStorage.setItem('currentPath', '/garage')
+          window.location.href = '/garage-quotations';
+        }}
+      >
+        <GarageIcon />
+      </span>
+    ),
   },
   {
     kind: 'header',
@@ -109,13 +142,24 @@ const NAVIGATION = [
       <span
         style={{ cursor: 'pointer' }}
         onClick={() => {
+          localStorage.setItem('currentPath', '/admin-reg')
           window.location.href = '/admin-registration';
         }}
       >
         Admin Registration
       </span>
     ),
-    icon: <AppRegistrationIcon />,
+    icon: (
+      <span
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          localStorage.setItem('currentPath', '/admin-reg')
+          window.location.href = '/admin-registration';
+        }}
+      >
+        <AppRegistrationIcon />
+      </span>
+    ),
   },
 ];
 
@@ -342,7 +386,6 @@ function App(props) {
     user: {
       name: userName,
       email: userEmail,
-      image: 'https://avatars.githubusercontent.com/u/19550456',
     },
   };
 
@@ -383,7 +426,12 @@ function App(props) {
 
 
   
-  const [pathname, setPathname] = React.useState('/dashboard');
+  const [pathname, setPathname] = React.useState('');
+
+  useEffect(() => {
+    const currentPath = localStorage.getItem("currentPath");
+    setPathname(currentPath)
+  })
 
   const router = React.useMemo(() => {
     return {
@@ -459,6 +507,7 @@ function App(props) {
                   <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
                   <Route path="/claims" element={<PrivateRoute element={<Claims />} />} />
                   <Route path="/admin-registration" element={<PrivateRoute element={<AdminRegistration />} />} />
+                  <Route path="/garage-quotations" element={<PrivateRoute element={<Quotations />} />} />
                   <Route path="/welcome" element={<WelcomePage />} /> 
                   <Route path="/admin/claim-list" element={<PrivateRoute element={<ClaimList />} />} />
                   <Route path="/view-all-claims" element={<PrivateRoute element={<ViewAllClaims />} />} />

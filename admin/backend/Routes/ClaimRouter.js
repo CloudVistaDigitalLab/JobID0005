@@ -1,6 +1,6 @@
 const express = require('express');
 const Claim = require('../Models/Claim');
-const { updateClaimStatus, getPendingClaims, getApprovedClaims, acceptCliam, rejectCliam } = require('../Controllers/ClaimController');
+const { updateClaimStatus, getPendingClaims, getApprovedClaims, acceptCliam, rejectCliam, sendEmail } = require('../Controllers/ClaimController');
 const router = express.Router();
 
 // Route to get all pending claims
@@ -13,6 +13,6 @@ router.get('/approved-claims', getApprovedClaims);
 router.patch('/update-claim-status', updateClaimStatus);
 router.patch('/accept-claim', acceptCliam);
 router.patch('/reject-claim', rejectCliam);
-router.post('/send-email', rejectCliam);
+router.post('/send-email', sendEmail);
 
 module.exports = router;

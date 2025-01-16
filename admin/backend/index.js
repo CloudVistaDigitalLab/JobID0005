@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const AuthRouter = require('./Routes/AuthRouter');
 const ProductRouter = require('./Routes/ProductRouter');
+const UserRouter = require('./Routes/UserRouter');
+const QuotationsRouter = require('./Routes/QuotationRouter');
 const claimRoutes = require('./Routes/ClaimRouter');
 const PaymentRouter = require('./Routes/PaymentRouter');
 const Stripe = require('stripe');
@@ -73,6 +75,8 @@ app.get('/getClaims', (req, res) =>{
 
 // Define API routes
 app.use('/auth', AuthRouter);  // Authentication routes
+app.use('/user', UserRouter);  // Authentication routes
+app.use('/quotations', QuotationsRouter);  // Authentication routes
 app.use('/products', ProductRouter);  // Product-related routes
 app.use('/claims', claimRoutes);  // Claims routes 
 app.use('/payments', PaymentRouter);  // Payment-related routes
