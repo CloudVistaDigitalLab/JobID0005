@@ -177,7 +177,7 @@ export default function Dashboard() {
 
   const today = new Date();
   const formattedDate = today.toISOString().split('T')[0];  
-  const todayClaims = allClaims.filter(claim => claim.incidentDate.split('T')[0] === "2025-01-02");
+  const todayClaims = allClaims.filter(claim => claim.createdAt.split('T')[0] === formattedDate);
 
   const createPastDatesArray = (datesCount) => {
     const datesArray = [];
