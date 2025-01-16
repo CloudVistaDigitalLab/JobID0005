@@ -56,8 +56,8 @@ const Payment = () => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
-                const decodedToken = jwtDecode(token);  // Decode the token
-                setUserId(decodedToken.userId);  // Extract the userId
+                const decodedToken = jwtDecode(token);  
+                setUserId(decodedToken.userId);  
             } catch (error) {
                 console.error('Error decoding token', error);
             }
@@ -104,7 +104,7 @@ const Payment = () => {
     const handlePayment = () => {
         setLoading(true);
 
-        // Get the JWT token from localStorage
+        
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -112,18 +112,18 @@ const Payment = () => {
             return;
         }
 
-        // Decode the token to extract the userId (_id)
+        
         const decodedToken = jwtDecode(token);
-        const userId = decodedToken._id; // Extract the _id from the decoded token
+        const userId = decodedToken._id; 
 
         const paymentData = {
-            userId: userId, // Dynamically use the user’s ObjectId
+            userId: userId,
             clientInfo,
             vehicleDetails,
             paymentInfo,
         };
 
-        // Make the payment API call
+        
         fetch('http://localhost:4000/api/payments', {
             method: 'POST',
             headers: {
@@ -135,29 +135,29 @@ const Payment = () => {
             .then(data => {
                 console.log('Payment saved successfully:', data);
 
-                // Log the policyId returned from the backend
+                
                 console.log('Generated Policy ID:', data.policyId);
 
-                // Show loading for 4 seconds before transitioning to success message
+                
                 setTimeout(() => {
                     setLoading(false);
-                    setPaymentSuccess(true); // Show success message after 4 seconds
+                    setPaymentSuccess(true); 
                 }, 4000);
 
-                // Send email after 4 seconds (simulate email sending)
+                
                 if (clientInfo.emailAddress) {
                     setTimeout(() => {
-                        sendEmail(clientInfo.emailAddress); // Send email after 4 seconds
+                        sendEmail(clientInfo.emailAddress); 
                     }, 3000);
                 } else {
                     console.error('Email is missing');
                 }
 
-                // Simulate navigation to profile page after success message (2 seconds)
+               
                 setTimeout(() => {
-                    setPaymentSuccess(false); // Hide the success message after 2 seconds
-                    navigate('/'); // Navigate to profile page after 2 seconds
-                }, 6000); // 4 seconds for loading + 2 seconds for success message
+                    setPaymentSuccess(false); 
+                    navigate('/');
+                }, 6000); 
             })
             .catch(error => {
                 console.error('Error saving payment:', error);
@@ -188,7 +188,7 @@ Best regards,
 The Finance Team at Vehicle Insurance Co.
 
 Note: This is an auto-generated message, and no reply is required.
-`, // Customize the body of the email
+`, 
         };
 
         fetch('http://localhost:4000/api/send-email', {
