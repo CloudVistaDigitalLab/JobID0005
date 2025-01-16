@@ -6,31 +6,31 @@ import Successfull from '../Components/Successfull';
 import { jwtDecode } from 'jwt-decode';
 
 const companyPlans = {
-    "Company 1": {
+    "Sri Lanka Insurance Corporation (SLIC)": {
         name: "Sri Lanka Insurance Corporation (SLIC)",
         price: "Rs19900/month",
         amount: 19900,
         details: "Comprehensive coverage with roadside assistance. Includes collision, theft, fire, and vandalism protection. 24/7 customer support and access to over 1,000 repair shops nationwide. Additional discounts for safe driving and bundling multiple policies."
     },
-    "Company 2": {
+    "Allianz Insurance Lanka": {
         name: "Allianz Insurance Lanka",
         price: "Rs14900/month",
         amount: 14900,
         details: "Affordable plan with accident coverage. Offers protection for medical bills, vehicle repairs, and lost wages in case of an accident. Includes free accident forgiveness and a rental car option while your vehicle is being repaired."
     },
-    "Company 3": {
+    "AIA Insurance": {
         name: "AIA Insurance",
         price: "Rs17900/month",
         amount: 17900,
         details: "Flexible options for occasional drivers. Pay-per-mile coverage option for those who drive less than 10,000 miles per year. Includes optional coverage for roadside assistance, rental reimbursement, and personal injury protection."
     },
-    "Company 4": {
+    "Cooperative Insurance": {
         name: "Cooperative Insurance",
         price: "Rs21900/month",
         amount: 21900,
         details: "Premium coverage for full protection. Covers everything from natural disasters to comprehensive liability. Includes free windshield repair, guaranteed new car replacement, and a 5-star claims service experience. Priority customer support with a dedicated agent."
     },
-    "Company 5": {
+    "Janashakthi Insurance": {
         name: "Janashakthi Insurance",
         price: "Rs12900/month",
         amount: 12900,
@@ -82,6 +82,7 @@ const Payment = () => {
     const [vehicleDetails, setVehicleDetails] = useState({
         registrationNumber: '',
         model: '',
+        vehicleNumber:'',
         color: '',
         type: '',
         chassisNumber: '',
@@ -134,6 +135,9 @@ const Payment = () => {
             .then(data => {
                 console.log('Payment saved successfully:', data);
     
+                // Log the policyId returned from the backend
+                console.log('Generated Policy ID:', data.policyId);
+    
                 // Show loading for 4 seconds before transitioning to success message
                 setTimeout(() => {
                     setLoading(false);
@@ -160,6 +164,7 @@ const Payment = () => {
                 setLoading(false);
             });
     };
+    
     
     // Function to send email using the backend API
     const sendEmail = (email) => {

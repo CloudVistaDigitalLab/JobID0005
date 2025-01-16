@@ -14,8 +14,6 @@ const upload = multer({ storage });
 // Use `upload.array` to handle multiple file uploads
 router.post('/', upload.array('evidenceFiles', 10), submitClaim); // Allow up to 10 files
 
-
-
 exports.getClaimById = async (req, res) => {
   try {
     const claim = await Claim.findById(req.params.id); // Fetch claim by its ObjectId

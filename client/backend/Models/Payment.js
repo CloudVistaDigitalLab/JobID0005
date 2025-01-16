@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
+// Payment Schema
 const paymentSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  policyId: { type: String, required: true },
   clientInfo: {
     fullName: String,
     dateOfBirth: String,
@@ -14,6 +15,7 @@ const paymentSchema = new mongoose.Schema({
   vehicleDetails: {
     registrationNumber: { type: String, required: true },
     model: { type: String, required: true },
+    vehicleNumber: { type: String, required: true },
     color: { type: String, required: true },
     type: { type: String, required: true },
     chassisNumber: { type: String, required: true },
@@ -35,22 +37,22 @@ const paymentSchema = new mongoose.Schema({
       },
     },
     isExpired: { type: Boolean, default: false },
-    subscriptionEndDate: { 
-      type: String, 
-      default: function () {
-        const paymentDate = new Date(this.paymentInfo.paymentDate);
-        paymentDate.setFullYear(paymentDate.getFullYear() + 1);
-        
-        // Format date to 'YYYY-MM-DD' and return as string
-        const year = paymentDate.getFullYear();
-        const month = String(paymentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(paymentDate.getDate()).padStart(2, '0');
-        
-        return `${year}-${month}-${day}`;
-      }
-    }
-    
+    subscriptionEndDate: { type: Date, default: function () {
+      const paymentDate = new Date(this.paymentInfo.paymentDate);
+      paymentDate.setFullYear(paymentDate.getFullYear() + 1);
+      return paymentDate;
+    }},
   },
 });
 
-module.exports = mongoose.model('Payment', paymentSchema, 'paymentsPlans');
+const Payment = mongoose.model('Payment', paymentSchema, 'insurancePaymentsPlans');
+
+// Policy Counter Schema
+const policyCounterSchema = new mongoose.Schema({
+  modelName: { type: String, required: true },
+  sequenceValue: { type: Number, required: true },
+});
+
+const PolicyCounter = mongoose.model('PolicyCounter', policyCounterSchema);
+
+module.exports = { Payment, PolicyCounter };

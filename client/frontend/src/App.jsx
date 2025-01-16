@@ -22,6 +22,7 @@ import PaymentPage from './Components/Payment';
 import AboutUsPage from './Components/AboutUs';
 import ServicesPage from './Components/Services'
 import ContactUsPage from './Components/ContactUs'
+import UnsubscribedPage from './Components/UnsubscribedActivePlans'
 
 const App = () => {
   const [themeMode, setThemeMode] = React.useState('light');
@@ -85,6 +86,7 @@ const App = () => {
             <Route path="/company/:companyName" element={<CompanyDetailsPage />} />
             <Route path="/pay-insurance/:id" element={<RenewInsuarance />} />
             <Route path="/payment/:companyName" element={<PaymentPage />} />
+            <Route path="/unsubscribepage" element={<UnsubscribedPage />} />
             
           </Routes>
         </Box>

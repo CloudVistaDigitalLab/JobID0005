@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { handleError, handleSuccess } from '../utils';
 import Badge from '@mui/material/Badge';
-import { Button, Typography, FormHelperText, Box, Grid, Paper, Container, Tab, Tabs, Modal, TextField, FormControl, InputLabel, Select, MenuItem, Checkbox, FormControlLabel, colors } from '@mui/material';
+import { Button, Typography, FormHelperText, Box, Grid, Paper, Container, Tab, Tabs, Modal, Divider, FormControl, InputLabel, Select, MenuItem, Checkbox, FormControlLabel, colors } from '@mui/material';
 import axios from 'axios';
 
 import { jwtDecode } from 'jwt-decode';
@@ -205,13 +205,13 @@ function Home() {
     
     ### Payment Information:
     - Card Holder Name: ${paymentInfo.cardHolderName}
-    - Card Number: ${paymentInfo.cardNumber.replace(/\d{12}/, '************')}  
+    - Card Number: ${paymentInfo.cardNumber.replace(/^(\d{12})\d{4}$/, '**** **** **** $&'.slice(-4))}  
     - Expiry Date: **/**
     - CVV: ***  
     - Price: ${paymentInfo.price}
     - Payment Date: ${paymentInfo.paymentDate}
     - Subscription Status: ${paymentInfo.isExpired ? 'Expired' : 'Active'}
-    - Subscription Status: ${paymentInfo.subscriptionEndDate}
+    - Subscription disable: ${paymentInfo.subscriptionEndDate}
     
     ---
     
@@ -265,7 +265,7 @@ function Home() {
     };
 
     const handleNavigation = (id) => {
-        navigate(`/pay-insurance/${id}`);
+        navigate(`/unsubscribepage`);
     };
     
 
@@ -434,14 +434,14 @@ function Home() {
                                 alignItems: 'flex-start',
                             }}
                         >
-                            <Typography variant="h5" sx={{ marginBottom: 2 }}>Pay Insurance</Typography>
+                            <Typography variant="h5" sx={{ marginBottom: 2 }}>Unsubscribed Active Plans</Typography>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 sx={{ alignSelf: 'flex-end', '&:hover': { backgroundColor: '#5B6B7C' } }}
-                                onClick={() => handleNavigation('/pay-insurance')}
+                                onClick={() => handleNavigation('/unsubscribepage')}
                             >
-                                Go to Pay Insurance
+                                Go to Check Validity
                             </Button>
                         </Box>
                     </Grid>
@@ -524,18 +524,21 @@ function Home() {
                                             <Grid item xs={12} sm={6} md={4} key={index}>
                                                 <Paper sx={{ padding: 2, marginBottom: 2 }}>
                                                     <Typography variant="h5">Owner Information</Typography>
+                                                    
+                                                    <Typography sx={{color:'#F01010'}}><strong>PolicyID: {client.policyId}</strong></Typography>
                                                     <Typography>Name: {client.clientInfo.fullName}</Typography>
                                                     <Typography>Email: {client.clientInfo.emailAddress}</Typography>
                                                     <Typography>Contact Number: {client.clientInfo.contactNumber}</Typography>
                                                     <Typography>Address: {client.clientInfo.permanentAddress}</Typography>
-                                                    <br />
+                                                    <Divider sx={{ marginY: 1 }} />
                                                     <Typography variant="h5">Vehicle Details</Typography>
                                                     <Typography>Registration Number: {client.vehicleDetails.registrationNumber}</Typography>
                                                     <Typography>Model: {client.vehicleDetails.model}</Typography>
+                                                    <Typography>Color: {client.vehicleDetails.ven}</Typography>
                                                     <Typography>Color: {client.vehicleDetails.color}</Typography>
                                                     <Typography>Type: {client.vehicleDetails.type}</Typography>
                                                     <Typography>Chassis Number: {client.vehicleDetails.chassisNumber}</Typography>
-                                                    <br />
+                                                    <Divider sx={{ marginY: 1 }} />
                                                     <Typography variant="h5">Payment Information</Typography>
                                                     <Typography>Price: {paymentInfo?.price || "N/A"}</Typography> {/* Show N/A if price is missing */}
 

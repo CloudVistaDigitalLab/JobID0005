@@ -1,7 +1,7 @@
 const express = require('express');
 const cron = require('node-cron');
 const router = express.Router();
-const Payment = require('../Models/Payment'); // Assuming the Payment model is defined
+const { Payment, PolicyCounter } = require('../Models/Payment');
 const Unsubscribe = require('../Models/Unsubscribe'); // Assuming the Unsubscribe model is defined
 
 const nodemailer = require('nodemailer');
@@ -23,23 +23,56 @@ const nodemailer = require('nodemailer');
 // });
 
 
-router.post('/payments', (req, res) => {
-  const newPayment = new Payment(req.body);
+router.post('/payments', async (req, res) => {
+  try {
+    const {
+      userId,
+      clientInfo,
+      vehicleDetails,
+      paymentInfo
+    } = req.body;
 
-  newPayment.save()
-      .then(() => {
-          console.log('details are saved successfully');
-          return res.status(200).json({
-              success: "details are saved successfully"
-          });
-      })
-      .catch((err) => {
-          console.error(err);
-          return res.status(400).json({
-              error: err
-          });
-      });
+    // Validate required fields
+    if (!userId || !vehicleDetails || !paymentInfo) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+
+    // Generate claim ID
+    let policyIdCounter = await PolicyCounter.findOne({ modelName: 'Payment' });
+    if (!policyIdCounter) {
+      policyIdCounter = new PolicyCounter({ modelName: 'Payment', sequenceValue: 1 });
+    } else {
+      policyIdCounter.sequenceValue += 1;
+    }
+    await policyIdCounter.save();
+    const policyId = 'UP' + String(policyIdCounter.sequenceValue).padStart(7, '0');
+
+    // Create and save payment
+    const payment = new Payment({
+      userId,
+      policyId,
+      clientInfo,
+      vehicleDetails,
+      paymentInfo,
+    });
+
+    await payment.save();
+
+    console.log('Payment details saved successfully');
+    res.status(200).json({
+      success: true,
+      message: 'Payment details saved successfully',
+      policyId,
+    });
+  } catch (error) {
+    console.error('Error saving payment details:', error);
+    res.status(500).json({ success: false, message: 'Error saving payment details' });
+  }
 });
+
+
+
+        
 
 
 // Configure nodemailer for sending emails
@@ -50,6 +83,7 @@ const transporter = nodemailer.createTransport({
         pass: 'qr gq kf ot vn iy tt xi', // Ensure this is secure
     },
 });
+
 
 // Endpoint to send email
 router.post('/send-email', (req, res) => {
@@ -302,6 +336,78 @@ router.post('/unsubscribe', async (req, res) => {
   });
 
 
+
+
+  router.get('/unsubscribedPlans/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const plans = await Unsubscribe.find({ userId});
+        res.json(plans);
+    } catch (error) {
+        console.error('Error fetching unsubscribed plans:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
+
+
+
+
+const deleteExpiredUnsubscribes = async () => {
+  try {
+      const result = await Unsubscribe.deleteMany({
+          $expr: {
+              $lt: [
+                  { $dateFromString: { dateString: "$subscriptionEndDate" } },
+                  { $dateFromString: { dateString: "$unsubscribeDate" } }
+              ]
+          }
+      });
+
+      console.log(`${result.deletedCount} expired unsubscribed plans deleted.`);
+  } catch (error) {
+      console.error('Error cleaning up expired unsubscribes:', error);
+  }
+};
+
+
+router.post('/send-email/contactUs', (req, res) => {
+  const { email, message , about } = req.body;
+
+  const mailOptions = {
+      from: email,
+      to: 'geeshanthisera1234@gmail.com',
+      subject: about,
+      text: message,
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+          return res.status(500).send('Failed to send email');
+      }
+      res.status(200).send('Email sent successfully');
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+cron.schedule('*/10 * * * * *', async () => {
+  console.log('Running scheduled cleanup...');
+  await deleteExpiredUnsubscribes();
+});
+
 // expired status update
 cron.schedule('*/10 * * * * *', async () => {
   try {
@@ -312,7 +418,7 @@ cron.schedule('*/10 * * * * *', async () => {
       const paymentDate = new Date(payment.paymentInfo.paymentDate);
       const diffInDays = Math.floor((today - paymentDate) / (1000 * 60 * 60 * 24)); // Calculate the difference in days
 
-      if (diffInDays > 30 && !payment.paymentInfo.isExpired) {
+      if (diffInDays > 365 && !payment.paymentInfo.isExpired) {
         payment.paymentInfo.isExpired = true;
         await payment.save();
         console.log(`Plan expired for user: ${payment.userId}`);

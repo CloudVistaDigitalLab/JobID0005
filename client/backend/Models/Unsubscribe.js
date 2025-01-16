@@ -5,7 +5,13 @@ const Schema = mongoose.Schema;
 const unsubscribeSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   paymentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Payment', required: true },
-  subscriptionEndDate: { type: String,  },
+  subscriptionEndDate: {
+    type: String,
+    default: () => {
+      const today = new Date();
+      return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    },
+  },
   unsubscribeDate: { 
     type: String, 
     default: () => {
