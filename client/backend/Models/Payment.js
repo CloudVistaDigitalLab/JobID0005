@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
+// Payment Schema
 const paymentSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  policyId: { type: String, required: true },
   clientInfo: {
     fullName: String,
     dateOfBirth: String,
@@ -14,6 +15,7 @@ const paymentSchema = new mongoose.Schema({
   vehicleDetails: {
     registrationNumber: { type: String, required: true },
     model: { type: String, required: true },
+    vehicleNumber: { type: String, required: true },
     color: { type: String, required: true },
     type: { type: String, required: true },
     chassisNumber: { type: String, required: true },
@@ -35,8 +37,30 @@ const paymentSchema = new mongoose.Schema({
       },
     },
     isExpired: { type: Boolean, default: false },
+    subscriptionEndDate: { 
+      type: Date, 
+      default: function () {
+        const paymentDate = new Date(this.paymentInfo.paymentDate);
+        paymentDate.setFullYear(paymentDate.getFullYear() + 1);
+    
+        
+        const formattedDate = `${paymentDate.getFullYear()}-${String(paymentDate.getMonth() + 1).padStart(2, '0')}-${String(paymentDate.getDate()).padStart(2, '0')}`;
+    
+        return formattedDate;
+      }
+    }
+    
   },
 });
 
+const Payment = mongoose.model('Payment', paymentSchema, 'insurancePaymentsPlans');
 
-module.exports = mongoose.model('Payment', paymentSchema, 'paymentsPlans');
+// Policy Counter Schema
+const policyCounterSchema = new mongoose.Schema({
+  modelName: { type: String, required: true },
+  sequenceValue: { type: Number, required: true },
+});
+
+const PolicyCounter = mongoose.model('PolicyCounter', policyCounterSchema);
+
+module.exports = { Payment, PolicyCounter };

@@ -1,6 +1,6 @@
 const express = require('express');
 const multer = require('multer');
-const { submitClaim } = require('../Controllers/claimController');
+const { submitClaim } = require('../Controllers/ClaimController');
 const router = express.Router();
 const Claim = require('../Models/Claim');
 
@@ -11,29 +11,27 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Use `upload.array` to handle multiple file uploads
-router.post('/', upload.array('evidenceFiles', 10), submitClaim); // Allow up to 10 files
 
-
+router.post('/', upload.array('evidenceFiles', 10), submitClaim); 
 
 exports.getClaimById = async (req, res) => {
   try {
-    const claim = await Claim.findById(req.params.id); // Fetch claim by its ObjectId
+    const claim = await Claim.findById(req.params.id); 
 
     if (!claim) {
       return res.status(404).json({ message: 'Claim not found' });
     }
 
-    // Extract numeric part from the claimId (e.g., IC0000001 => 0000001)
-    const claimIdNumericPart = claim.claimId.slice(2);  // 'IC0000001' => '0000001'
+  
+    const claimIdNumericPart = claim.claimId.slice(2); 
 
-    // Increment the numeric part by 1
-    const incrementedClaimIdNumericPart = (parseInt(claimIdNumericPart, 10) + 1).toString().padStart(7, '0'); // Increment and pad
+ 
+    const incrementedClaimIdNumericPart = (parseInt(claimIdNumericPart, 10) + 1).toString().padStart(7, '0'); 
 
-    // Create the new claimId to display (e.g., IC0000001 => IC0000002)
+   
     const updatedClaimId = 'IC' + incrementedClaimIdNumericPart;
 
-    // Send the claim along with the updated claimId for display
+ 
     res.json({
       ...claim.toObject(),
       updatedClaimId,
@@ -70,7 +68,7 @@ router.get('/getclaimbyID/:userId', async (req, res) => {
 });
 
 router.get('/getclaim-lastly-added', (req, res) => {
-  // Find the most recent claim by sorting by _id in descending order and limiting to 1 result
+  
   Claim.find().sort({ _id: -1 }).limit(1).exec()
     .then((results) => {
       if (results.length === 0) {
@@ -79,7 +77,7 @@ router.get('/getclaim-lastly-added', (req, res) => {
       console.log(results);
       return res.status(200).json({
         success: true,
-        existingDetails: results[0]  // Return only the most recent claim
+        existingDetails: results[0]  
       });
     })
     .catch((err) => {
@@ -95,16 +93,16 @@ router.get('/getclaim-lastly-added', (req, res) => {
 router.get('/getclaim', (req, res) => {
   Claim.find().sort({ _id: -1 }).limit(1).exec().then((results) => {
     if (results.length > 0) {
-      const claim = results[0]; // Fetch the latest claim
-      const claimIdNumericPart = claim.claimId.slice(2);  // 'IC0000002' => '0000002'
-      const nextClaimIdNumericPart = (parseInt(claimIdNumericPart, 10) + 1).toString().padStart(7, '0'); // Increment and pad
+      const claim = results[0]; 
+      const claimIdNumericPart = claim.claimId.slice(2); 
+      const nextClaimIdNumericPart = (parseInt(claimIdNumericPart, 10) + 1).toString().padStart(7, '0'); 
 
       const nextClaimId = 'IC' + nextClaimIdNumericPart;
 
       return res.status(200).json({
         success: true,
         existingDetails: claim,
-        nextClaimId, // Send next claim ID to the frontend
+        nextClaimId, 
       });
     } else {
       res.status(404).json({ success: false, message: 'No claims found' });

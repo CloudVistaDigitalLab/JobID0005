@@ -33,7 +33,7 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Step 1: Find the user by email
+       
         const user = await UserModel.findOne({ email });
         const errorMsg = 'Auth failed: email or password is wrong';
 
@@ -41,31 +41,31 @@ const login = async (req, res) => {
             return res.status(403).json({ message: errorMsg, success: false });
         }
 
-        // Step 2: Compare passwords
+        
         const isPassEqual = await bcrypt.compare(password, user.password);
 
         if (!isPassEqual) {
             return res.status(403).json({ message: errorMsg, success: false });
         }
 
-        // Step 3: Generate JWT token
+        
         const jwtToken = jwt.sign(
             { email: user.email, _id: user._id },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
 
-        // Step 4: Send response with user info and token
+       
         res.status(200).json({
             success: true,
             jwtToken,
             email,
             name: user.name,
-            userId: user._id // Include the userId
+            userId: user._id 
         });
     } catch (err) {
-        // Step 5: Handle errors
-        console.error(err); // Log the error for debugging purposes
+        
+        console.error(err); 
         res.status(500).json({
             message: "Internal server error",
             success: false

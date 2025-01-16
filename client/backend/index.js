@@ -47,6 +47,7 @@ const Stripe = require('stripe'); // Stripe library
 const PaymentRouter = require('./Routes/PaymentRouter');
 const paymentRoutes = require('./Routes/PaymentRouter');
 
+
 require('dotenv').config();
 require('./Models/db');
 
@@ -72,6 +73,7 @@ app.use('/products', ProductRouter);
 app.use('/api/claim', ClaimRouter);
 app.use('/api', paymentRoutes);
 
+
 // Ping route for testing
 app.get('/ping', (req, res) => {
   res.send('PONG');
@@ -82,7 +84,7 @@ app.post('/api/payment/create-checkout-session', async (req, res) => {
   const { planName, amount } = req.body;
 
   // Add this line to use the payment routes
-app.use('/api/payment', PaymentRouter);
+// app.use('/api/payment', PaymentRouter);
 
 
   try {

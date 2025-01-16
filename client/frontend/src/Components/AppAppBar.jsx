@@ -5,109 +5,46 @@ import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
-import Drawer from '@mui/material/Drawer';
-import MenuIcon from '@mui/icons-material/Menu';
 import ToggleColorMode from './toggle-mode/ToggleColorMode';
 import { alpha } from '@mui/material';
 
-const logoStyle = {
-  width: 'auto',
-  height: '40px',
-  cursor: 'pointer',
-};
-
 function AppAppBar({ mode, toggleColorMode }) {
-  const [open, setOpen] = React.useState(false);
-  const [loginInfo, setLoginInfo] = React.useState({ email: '', password: '' });
-  const [isLoggedIn, setIsLoggedIn] = React.useState(localStorage.getItem('token') ? true : false); // Check localStorage for login status
-
+  const [isLoggedIn, setIsLoggedIn] = React.useState(localStorage.getItem('token') ? true : false); 
   const navigate = useNavigate();
+  const [userName, setUserName] = React.useState('');
 
-  const toggleDrawer = (newOpen) => () => {
-    setOpen(newOpen);
-  };
 
-  const handleError = (message) => {
-    alert(message);
-  };
-
-  const handleSuccess = (message) => {
-    alert(message);
-  };
-
-  const scrollToSection = (sectionId) => {
-    const sectionElement = document.getElementById(sectionId);
-    const offset = 128;
-    if (sectionElement) {
-      const targetScroll = sectionElement.offsetTop - offset;
-      sectionElement.scrollIntoView({ behavior: 'smooth' });
-      window.scrollTo({
-        top: targetScroll,
-        behavior: 'smooth',
-      });
-      setOpen(false);
+  React.useEffect(() => {
+    if (isLoggedIn) {
+      
+      const storedUserName = localStorage.getItem('loggedInUserName');
+      setUserName(storedUserName || ''); 
     }
-  };
-
+  }, [isLoggedIn]);
 
   const handleNavigation = (path) => {
     navigate(path);
-};
+  };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const { email, password } = loginInfo;
-    if (!email || !password) {
-      return handleError('Email and password are required');
-    }
-    try {
-      const url = `${process.env.REACT_APP_API_URL}/auth/login`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(loginInfo)
-      });
-      const result = await response.json();
-      const { success, message, jwtToken, name, error } = result;
 
-      if (success) {
-        handleSuccess(message);
-        localStorage.setItem('token', jwtToken);
-        localStorage.setItem('loggedInUser', name);
-        setIsLoggedIn(true); // Set login state to true
-        setTimeout(() => {
-          navigate('/');
-        }, 15000);
-      } else if (error) {
-        const details = error?.details[0].message;
-        handleError(details);
-      } else if (!success) {
-        handleError(message);
-      }
-    } catch (err) {
-      handleError(err);
-    }
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleSignup = () => {
+    navigate('/signup');
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('loggedInUser');
-    setIsLoggedIn(false); // Set login state to false
+    localStorage.removeItem('loggedInUserName');
+    setUserName('');
+    setIsLoggedIn(false);
     navigate('/');
-  };
-
-  const handleLoginClick = () => {
-    if (!isLoggedIn) {
-      navigate('/login'); // Navigate to login page if not logged in
-    } else {
-      handleLogout(); // Log out if already logged in
-    }
+    window.location.reload();
   };
 
   return (
@@ -166,48 +103,78 @@ function AppAppBar({ mode, toggleColorMode }) {
               }}
             >
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                <MenuItem onClick={() => scrollToSection('features')} sx={{ py: '6px', px: '12px' }}>
-                  <Typography variant="body2" color="text.primary" onClick={() => handleNavigation('/welcome')}>
+                <MenuItem sx={{
+                  py: '6px', px: '12px', '&:hover': {
+                    backgroundColor: 'transparent', 
+                  },
+                }} onClick={(e) => e.preventDefault()}>
+                  <Typography variant="h6" sx={{ textAlign: "center", fontWeight: 'bold' }}>
+                    Welcome,&nbsp;
+                  </Typography>
+                  <Typography variant="h6" sx={{ color: '#2a9d8f', textAlign: "center", }}>
+                    {userName}
+                  </Typography>
+                </MenuItem>
+                <MenuItem onClick={() => handleNavigation('/welcome')} sx={{ py: '6px', px: '12px' }}>
+                  <Typography variant="body2" color="text.primary">
                     Home
                   </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => scrollToSection('faq')} sx={{ py: '6px', px: '12px' }}>
+                
+                <MenuItem onClick={() => handleNavigation('/about')} sx={{ py: '6px', px: '12px' }}>
                   <Typography variant="body2" color="text.primary">
                     About Us
                   </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => scrollToSection('faq')} sx={{ py: '6px', px: '12px' }}>
+                <MenuItem onClick={() => handleNavigation('/service')} sx={{ py: '6px', px: '12px' }}>
                   <Typography variant="body2" color="text.primary">
                     Services
                   </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => scrollToSection('faq')} sx={{ py: '6px', px: '12px' }}>
+                <MenuItem onClick={() => handleNavigation('/contactus')} sx={{ py: '6px', px: '12px' }}>
                   <Typography variant="body2" color="text.primary">
                     Contact Us
                   </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => scrollToSection('faq')} sx={{ py: '6px', px: '12px' }}>
-                  <Typography variant="body2" color="text.primary" onClick={() => handleNavigation('/home')}>
+                <MenuItem onClick={() => handleNavigation('/home')} sx={{ py: '6px', px: '12px' }}>
+                  <Typography variant="body2" color="text.primary">
                     User Profile
                   </Typography>
                 </MenuItem>
               </Box>
               <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
               <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, ml: 2 }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleLoginClick} // Handle login/logout on button click
-                  sx={{ minWidth: '120px', p: '4px' }}
-                >
-                  {isLoggedIn ? 'Log out' : 'Log in'} {/* Show 'Log out' if logged in, else 'Log in' */}
-                </Button>
-                <Button variant="contained" color="primary" onClick={() => scrollToSection('contact')} sx={{ minWidth: '120px', p: '4px' }}>
-                  Sign up
-                </Button>
+                {isLoggedIn ? (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleLogout}
+                    sx={{ minWidth: '120px', p: '4px' }}
+                  >
+                    Log out
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleLogin}
+                      sx={{ minWidth: '120px', p: '4px' }}
+                    >
+                      Log in
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSignup}
+                      sx={{ minWidth: '120px', p: '4px' }}
+                    >
+                      Sign up
+                    </Button>
+                  </>
+                )}
               </Box>
             </Box>
-            {/* Rest of the component remains unchanged */}
           </Toolbar>
         </Box>
       </AppBar>
