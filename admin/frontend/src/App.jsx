@@ -44,6 +44,12 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Dashboard from './pages/Dashboard';
 import DescriptionIcon from '@mui/icons-material/Description';
 import Claims from './pages/Claims';
+import AdminRegistration from './pages/AdminRegistration';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import GarageIcon from '@mui/icons-material/Garage';
+
+import { handleError, handleSuccess } from './utils';
+import ToggleColorMode from './features/toggle-mode/ToggleColorMode';
 
 const NAVIGATION = [
   {
@@ -56,7 +62,7 @@ const NAVIGATION = [
       <span
         style={{ cursor: 'pointer' }}
         onClick={() => {
-          window.location.href = '/dashboard'; // Use href to change the URL
+          window.location.href = '/dashboard';
         }}
       >
         Dashboard
@@ -71,13 +77,45 @@ const NAVIGATION = [
       <span
         style={{ cursor: 'pointer' }}
         onClick={() => {
-          window.location.href = '/claims'; // Use href to change the URL
+          window.location.href = '/claims';
         }}
       >
         Claims
       </span>
     ),
     icon: <DescriptionIcon />,
+  },
+  {
+    segment: 'garage',
+    title: (
+      <span
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          window.location.href = '/garage-quotations'; 
+        }}
+      >
+        Garage Quotations
+      </span>
+    ),
+    icon: <GarageIcon />,
+  },
+  {
+    kind: 'header',
+    title: 'Registarions',
+  },
+  {
+    segment: 'admin-reg',
+    title: (
+      <span
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          window.location.href = '/admin-registration';
+        }}
+      >
+        Admin Registration
+      </span>
+    ),
+    icon: <AppRegistrationIcon />,
   },
 ];
 
@@ -297,6 +335,17 @@ function App(props) {
   const [themeMode, setThemeMode] = React.useState('light')
   const currentTheme = createTheme(customTheme(themeMode),);
 
+  const userName = localStorage.getItem('loggedInUser');
+  const userEmail = localStorage.getItem('loggedInUserEmail');
+
+  const currentSession = {
+    user: {
+      name: userName,
+      email: userEmail,
+      image: 'https://avatars.githubusercontent.com/u/19550456',
+    },
+  };
+
   useEffect(() => {
     const themeFromLocalStorage = localStorage.getItem('theme');
     if (themeFromLocalStorage) {
@@ -344,15 +393,19 @@ function App(props) {
     };
   }, [pathname]);
 
-
   const [session, setSession] = React.useState(demoSession);
   const authentication = React.useMemo(() => {
     return {
       signIn: () => {
-        setSession(demoSession);
+        setSession(currentSession);
       },
       signOut: () => {
-        setSession(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('loggedInUser');
+        handleSuccess('User Logged out');
+        setTimeout(() => {
+            navigate('/login');
+        }, 1000);
       },
     };
   }, []);
@@ -364,6 +417,12 @@ function App(props) {
       navigate('/login');
     }, 1000);
   };
+
+  function toggleThemeFunc() {
+    return(
+      <ToggleColorMode mode={themeMode} toggleColorMode={toggleTheme}/>
+    )
+  }
 
   return (
     <ThemeProvider theme={currentTheme}>
@@ -383,18 +442,13 @@ function App(props) {
             router={router}
             theme={currentTheme}
             authentication={authentication}
-            session={session}
+            session={currentSession}
             branding={{title: 'Vehicle Insurance Co.', logo: ''}}
           >
             <DashboardLayout
-              appTitle="Your Custom Title"
-              header={
-                <AppBar position="static">
-                  <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    Your Custom Title
-                  </Typography>
-                </AppBar>
-              }
+              slots={{
+                toolbarActions: toggleThemeFunc
+              }}
             >
               <main>
                 <Routes>
@@ -404,6 +458,7 @@ function App(props) {
                   <Route path="/adminHome" element={<PrivateRoute element={<AdminHome />} />} />
                   <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
                   <Route path="/claims" element={<PrivateRoute element={<Claims />} />} />
+                  <Route path="/admin-registration" element={<PrivateRoute element={<AdminRegistration />} />} />
                   <Route path="/welcome" element={<WelcomePage />} /> 
                   <Route path="/admin/claim-list" element={<PrivateRoute element={<ClaimList />} />} />
                   <Route path="/view-all-claims" element={<PrivateRoute element={<ViewAllClaims />} />} />

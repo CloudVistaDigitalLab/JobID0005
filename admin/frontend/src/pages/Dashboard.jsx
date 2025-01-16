@@ -12,9 +12,16 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
+import Card from '@mui/material/Card';
 import axios from 'axios'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function Row(props) {
     const { row } = props;
@@ -105,55 +112,196 @@ function Row(props) {
 
 export default function Dashboard() {
   const [claims, setClaims] = useState([])
+  const [allClaims, setAllClaims] = useState([])
+
+  const pendingClaim = allClaims.filter(claim => claim.status === "Pending");
+  const acceptedClaim = allClaims.filter(claim => claim.status === "Accepted");
+  const rejectedClaim = allClaims.filter(claim => claim.status === "Rejected");
   useEffect(() => {
-        axios
-            .get('http://localhost:4002/getClaims')
-            .then((response) => {
-                const reversedClaims = response.data.reverse(); // Sort in descending order
-                const lastFourClaims = reversedClaims.slice(0, 4); // Get the first 4 items after sorting
-                setClaims(lastFourClaims); // Set the state
-            }) // Ensure proper variable usage
-            .catch((err) => console.log(err));
+    axios
+      .get('http://localhost:4002/getClaims')
+      .then((response) => {
+        const reversedClaims = response.data.reverse(); // Sort in descending order
+        const lastFourClaims = reversedClaims.slice(0, 4); // Get the first 4 items after sorting
+        setClaims(lastFourClaims); // Set the state
+        setAllClaims(response.data); // Set the state
+      }) // Ensure proper variable usage
+      .catch((err) => console.log(err));
   }, []);
+
+  const today = new Date();
+  const formattedDate = today.toISOString().split('T')[0];  
+  const todayClaims = allClaims.filter(claim => claim.incidentDate.split('T')[0] === "2025-01-02");
+
+  const createPastDatesArray = (datesCount) => {
+    const datesArray = [];
+    const today = new Date();
+  
+    for (let i = 0; i < datesCount; i++) {
+      const pastDate = new Date(today);
+      pastDate.setDate(today.getDate() - i);
+      const formattedDate = pastDate.toISOString().split('T')[0];
+      datesArray.push(formattedDate);
+    }
+  
+    return datesArray;
+  };
+  
+  const createPastDaysArray = (daysCount) => {
+    const daysArray = [];
+    const today = new Date();
+  
+    for (let i = 0; i < daysCount; i++) {
+      const pastDate = new Date(today);
+      pastDate.setDate(today.getDate() - i);
+      const formattedDate = pastDate.toISOString().split('T')[0];
+      const formattedDay = pastDate.toISOString().slice(8,10)
+      daysArray.push(formattedDay);
+    }
+  
+    return daysArray;
+  };
+  
+  const past5Dates = createPastDatesArray(5);
+  const past5Days = createPastDaysArray(5);
+
+  const claimsCount = past5Dates.map((date) => {
+    return allClaims.filter((claim) => {
+      const claimDate = new Date(claim.createdAt);
+      return claimDate.toISOString().split('T')[0] === date;
+    }).length;
+  });
+
+  const nextDay = Math.max(...past5Days.map(Number)) + 1;
+
+  const [predictedData, setPredictedData] = useState()
+
+  const handlePredictClick = async () => {
+    const endpoint = "http://127.0.0.1:8000/predict";
+    const requestBody = {
+      days: past5Days,
+      claims: claimsCount,
+      next_day: nextDay,
+    };
+
+    try {
+      const response = await axios.post(endpoint, requestBody);
+      setTimeout(() => {
+        setPredictedData(response.data);
+        console.log("Prediction Response:", response.data);
+      }, 3000);
+    } catch (error) {
+      console.error("Error calling the predict endpoint:", error.response?.data || error.message);
+      alert("Failed to fetch prediction. Check console for details.");
+    }
+  };
+  
+  const [openPredict, setOpenPredict] = React.useState(false);
+  const handleClickOpenPredict = () => {
+    handlePredictClick();
+    setOpenPredict(true);
+  };
+
+  const handleClosePredict = () => {
+    setOpenPredict(false);
+  };
 
   return (
     <Box sx={{px:2, py:1}}>
-        <Box>
-            <Typography variant="h4" color="initial" sx={{fontWeight:700, pb:1}}>
-                Dashboard
-            </Typography>
+      <Box>
+        <Typography variant="h4" color="initial" sx={{fontWeight:700, pb:1}}>
+          Dashboard
+        </Typography>
+      </Box>
+      <Divider/>
+      <Box sx={{py:2}}>
+        <Box sx={{display:'flex', alignItem:'center', justifyContent:"space-between", pb:2}}>
+          <Typography variant="h5" color="initial" sx={{fontWeight:700, pb:1}}>
+            Recent Claims
+          </Typography>
+          <Button variant="contained" color="primary" sx={{width:'150px'}}>
+            View All Claims
+          </Button>
         </Box>
-        <Divider/>
-        <Box sx={{py:2}}>
-            <Box sx={{display:'flex', alignItem:'center', justifyContent:"space-between", pb:2}}>
-                <Typography variant="h5" color="initial" sx={{fontWeight:700, pb:1}}>
-                    Recent Claims
-                </Typography>
-                <Button variant="contained" color="primary" sx={{width:'150px'}}>
-                    View All Claims
-                </Button>
+          
+        <TableContainer component={Paper}>
+          <Table aria-label="collapsible table">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }}/>
+                <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }}>Claim ID</TableCell>
+                <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }}>Vehicle Owner</TableCell>
+                <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }} align="center">Policy Number</TableCell>
+                <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }} align="center">Incident Date</TableCell>
+                <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }} align="center">Options</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {claims.map((claim)=>(
+                <Row key={claim.claimId} row={claim} />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+      <Divider/>
+      <Box sx={{my:2, display:'flex', justifyContent:'space-between'}}>
+        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center'}}>
+          <Typography variant="h5"># All Clams</Typography>
+          <Typography variant="h1" sx={{color:'#2a9d8f'}}>{allClaims.length}</Typography>
+        </Card>
+        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center'}}>
+          <Typography variant="h5"># Pending Clams</Typography>
+          <Typography variant="h1" sx={{color:'#2a9d8f'}}>{pendingClaim.length}</Typography>
+        </Card>
+        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center'}}>
+          <Typography variant="h5"># Accepted Clams</Typography>
+          <Typography variant="h1" sx={{color:'#2a9d8f'}}>{acceptedClaim.length}</Typography>
+        </Card>
+        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center'}}>
+          <Typography variant="h5"># Rejected Clams</Typography>
+          <Typography variant="h1" sx={{color:'#2a9d8f'}}>{rejectedClaim.length}</Typography>
+        </Card>
+      </Box>
+      <Divider/>
+      <Box sx={{mt:2, display:'flex', justifyContent:'space-between', gap:3}}>
+        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center', width:'50%'}}>
+          <Typography variant="h5">No. of Claims for Today</Typography>
+          <Typography variant="h1" sx={{color:'#2a9d8f'}}>{todayClaims.length}</Typography>
+        </Card>
+        <Card sx={{p:2, display:'flex', flexDirection:'column', alignItems:'center', width:'50%'}}>
+          <Typography variant="h5" sx={{mb:2}}>No. of Claims that can be Crated Tomorrow</Typography>
+          <Button variant="contained" onClick={handleClickOpenPredict}>
+            Predict
+          </Button>
+        </Card>
+      </Box>
+      <Dialog
+        open={openPredict}
+        onClose={handleClosePredict}
+        sx={{width: '100%', height: '100%'}}
+        
+      >
+        <DialogTitle sx={{display:'flex', justifyContent:'space-between', alignItem:'center'}}>
+          No. of Claims Prediction for Tomorrow
+          
+        </DialogTitle>
+        <DialogContent>
+          {predictedData?(
+            <Box sx={{mb:1}}>
+              {predictedData.predicted_claims} cliams can be filed by the users tomorrow
             </Box>
-            
-            <TableContainer component={Paper}>
-                <Table aria-label="collapsible table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }}/>
-                            <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }}>Claim ID</TableCell>
-                            <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }}>Vehicle Owner</TableCell>
-                            <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }} align="center">Policy Number</TableCell>
-                            <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }} align="center">Incident Date</TableCell>
-                            <TableCell sx={{ backgroundColor: '#2a9d8f', color:'white', fontWeight: 700 }} align="center">Options</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {claims.map((claim)=>(
-                            <Row key={claim.claimId} row={claim} />
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
+          ):(
+            <Box sx={{display:'flex', alignItems:'center', gap:2, justifyContent:'center'}}>
+              <CircularProgress />
+              <Typography>Predicting...</Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClosePredict}>close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

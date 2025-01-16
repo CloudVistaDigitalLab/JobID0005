@@ -17,7 +17,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-
+import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -49,9 +49,12 @@ function a11yProps(index) {
 }
 
 function Row(props) {
-  const { row } = props;
+  const { row, type } = props;
   const [open, setOpen] = React.useState(false);
   const [openRejected, setOpenRejected] = React.useState(false);
+  const [openAccepted, setOpenAccepted] = React.useState(false);
+  const [openImage, setOpenImage] = React.useState(false);
+  const [imageURL, setImageURL] = React.useState(false);
 
   const handleClickOpenRejected = () => {
     setOpenRejected(true);
@@ -60,6 +63,24 @@ function Row(props) {
   const handleCloseRejected = () => {
     setOpenRejected(false);
   };
+  
+  const handleClickOpenAccepted = () => {
+    setOpenAccepted(true);
+  };
+
+  const handleCloseAccepted = () => {
+    setOpenAccepted(false);
+  };
+  
+  const handleClickOpenImage = (image) => {
+    setImageURL(image);
+    setOpenImage(true);
+  };
+
+  const handleCloseImage = () => {
+    setOpenImage(false);
+  };
+  
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -78,10 +99,22 @@ function Row(props) {
         <TableCell >{row.fullName}</TableCell>
         <TableCell align="center">{row.policyNumber}</TableCell>
         <TableCell align="center">{row.incidentDate.split('T')[0]}</TableCell>
-        <TableCell sx={{display:'flex', gap:1}}>
-          <Button color="success" variant="contained">Accept</Button>
-          <Button color="error" variant="contained" onClick={handleClickOpenRejected}>Reject</Button>
-        </TableCell>
+        {type === 'pending' &&
+          <TableCell sx={{display:'flex', gap:1}}>
+            <Button color="success" variant="contained" onClick={handleClickOpenAccepted}>Accept</Button>
+            <Button color="error" variant="contained" onClick={handleClickOpenRejected}>Reject</Button>
+          </TableCell>
+        }
+        {type === 'accepted' &&
+          <TableCell sx={{display:'flex', gap:1}}>
+            <Button color="success" variant="contained" disabled onClick={handleClickOpenAccepted}>Accepted</Button>
+          </TableCell>
+        }
+        {type === 'rejected' &&
+          <TableCell sx={{display:'flex', gap:1}}>
+            <Button color="error" variant="contained" disabled onClick={handleClickOpenRejected}>Rejected</Button>
+          </TableCell>
+        }
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -118,13 +151,16 @@ function Row(props) {
                     {row.uploadedURLs.map((image, index) => (
                         <TableCell component="th" scope="row">
                           <img
-                              src={image}
-                              alt={`Uploaded ${index}`}
-                              style={{
-                                  height: "150px",
-                                  objectFit: "cover",
-                                  borderRadius: "4px",
-                              }}
+                            onClick={()=>handleClickOpenImage(image)}
+                            src={image}
+                            alt={`Uploaded ${index}`}
+                            style={{
+                              height: "150px",
+                              width: "100%",
+                              objectFit: "cover",
+                              borderRadius: "4px",
+                              cursor: 'pointer',
+                            }}
                           />
                         </TableCell>
                     ))}
@@ -148,8 +184,12 @@ function Row(props) {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
-            const email = formJson.email;
-            console.log(email);
+            const adminDescription = formJson.adminDescription;
+            axios.patch(`http://localhost:4002/claims/reject-claim`, {
+              _id: row._id,
+              status: 'Rejected',
+              adminDescription,
+            })
             handleCloseRejected();
           },
         }}
@@ -157,16 +197,15 @@ function Row(props) {
         <DialogTitle>Cliam Rejection Confiramtion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Do you want to reject this claim?
+            Do you want to reject the claim {row.claimId}?
           </DialogContentText>
           <TextField
             autoFocus
             required
             margin="dense"
-            id="name"
-            name="email"
+            id="adminDescription"
+            name="adminDescription"
             label="Reason for Rejection"
-            type="email"
             fullWidth
             variant="standard"
           />
@@ -176,15 +215,108 @@ function Row(props) {
           <Button type="submit">Yes, Reject Claim</Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+        open={openAccepted}
+        onClose={handleCloseAccepted}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const formJson = Object.fromEntries(formData.entries());
+            const acceptedAmount = formJson.acceptedAmount;
+            axios.patch(`http://localhost:4002/claims/accept-claim`, {
+              _id: row._id,
+              status: 'Accepted',
+              acceptedAmount,
+            })
+            handleCloseAccepted();
+          },
+        }}
+      >
+        <DialogTitle>Cliam Acception Confiramtion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Do you want to accept the claim {row.claimId}?
+          </DialogContentText>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="acceptedAmount"
+            name="acceptedAmount"
+            label="Accepted Amount"
+            type="number"
+            fullWidth
+            variant="standard"
+            
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAccepted}>No</Button>
+          <Button type="submit">Yes, Accept Claim</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openImage}
+        onClose={handleCloseImage}
+        sx={{width: '100%', height: '100%'}}
+        fullScreen
+      >
+        <DialogTitle sx={{display:'flex', justifyContent:'space-between', alignItem:'center'}}>
+          A Image for {row.claimId}
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={handleCloseImage}
+            aria-label="close"
+            sx={{width: '30px', height: '30px'}}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+        <img
+          src={imageURL}
+          alt={`Uploaded by ${row.fullname}`}
+          style={{
+            width: "100%",
+            objectFit: "cover",
+            borderRadius: "4px",
+          }}
+        />
+        </DialogContent>
+      </Dialog>
     </React.Fragment>
   );
 }
 
 export default function Claims() {
   const [claims, setClaims] = useState([])
+
   const [pendingClaims, setPendingClaims] = useState([])
+  const [pendingClaimsSearch, setPendingClaimsSearch] = useState('')
+  const filteredPendingClaims = pendingClaims.filter((item) =>
+    Object.values(item).some((value)=>
+      value.toString().toLowerCase().includes(pendingClaimsSearch.toLowerCase())
+    )
+  )
+
   const [acceptedClaims, setAcceptedClaims] = useState([])
+  const [acceptedClaimsSearch, setAcceptedClaimsSearch] = useState('')
+  const filteredAcceptedClaims = acceptedClaims.filter((item) =>
+    Object.values(item).some((value)=>
+      value.toString().toLowerCase().includes(acceptedClaimsSearch.toLowerCase())
+    )
+  )
+
   const [rejectedClaims, setRejectedClaims] = useState([])
+  const [rejectedClaimsSearch, setRejectedClaimsSearch] = useState('')
+  const filteredRejectedClaims = rejectedClaims.filter((item) =>
+    Object.values(item).some((value)=>
+      value.toString().toLowerCase().includes(rejectedClaimsSearch.toLowerCase())
+    )
+  )
   useEffect(() => {
     axios
       .get('http://localhost:4002/getClaims')
@@ -253,13 +385,18 @@ export default function Claims() {
         </Box>
         <CustomTabPanel value={value} index={0}>
           <Box>
-            <Box sx={{display:'flex', alignItem:'center', justifyContent:"space-between", pb:2}}>
-              <Typography variant="h5" color="initial" sx={{fontWeight:700, pb:1}}>
+            <Box sx={{display:'flex', alignItem:'center', justifyContent:"space-between", pb:1}}>
+              <h2 color="initial" style={{fontWeight:700}}>
                 Pending Claims
-              </Typography>
-              <Button variant="contained" color="primary" sx={{width:'150px'}}>
-                View All Claims
-              </Button>
+              </h2>
+              <TextField 
+                id="searchPending" 
+                label="Search" 
+                variant="outlined" 
+                type="text"
+                value={pendingClaimsSearch}
+                onChange={(e)=>setPendingClaimsSearch(e.target.value)}
+              />
             </Box>
             {pendingClaims && pendingClaims.length > 0?(
               <TableContainer component={Paper}>
@@ -275,8 +412,8 @@ export default function Claims() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {pendingClaims.map((claim)=>(
-                      <Row key={claim.claimId} row={claim} />
+                    {filteredPendingClaims.map((claim)=>(
+                      <Row key={claim.claimId} row={claim} type="pending"/>
                     ))}
                   </TableBody>
                 </Table>
@@ -289,13 +426,18 @@ export default function Claims() {
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
         <Box>
-            <Box sx={{display:'flex', alignItem:'center', justifyContent:"space-between", pb:2}}>
-              <Typography variant="h5" color="initial" sx={{fontWeight:700, pb:1}}>
+            <Box sx={{display:'flex', alignItem:'center', justifyContent:"space-between", pb:1}}>
+              <h2 color="initial" style={{fontWeight:700}}>
                 Accepted Claims
-              </Typography>
-              <Button variant="contained" color="primary" sx={{width:'150px'}}>
-                View All Claims
-              </Button>
+              </h2>
+              <TextField 
+                id="searchAccepted" 
+                label="Search" 
+                variant="outlined" 
+                type="text"
+                value={acceptedClaimsSearch}
+                onChange={(e)=>setAcceptedClaimsSearch(e.target.value)}
+              />
             </Box>
             {acceptedClaims && acceptedClaims.length > 0?(
               <TableContainer component={Paper}>
@@ -311,8 +453,8 @@ export default function Claims() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {acceptedClaims.map((claim)=>(
-                      <Row key={claim.claimId} row={claim} />
+                    {filteredAcceptedClaims.map((claim)=>(
+                      <Row key={claim.claimId} row={claim} type="accepted"/>
                     ))}
                   </TableBody>
                 </Table>
@@ -324,13 +466,18 @@ export default function Claims() {
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
         <Box>
-            <Box sx={{display:'flex', alignItem:'center', justifyContent:"space-between", pb:2}}>
-              <Typography variant="h5" color="initial" sx={{fontWeight:700, pb:1}}>
-                Rejected Claims
-              </Typography>
-              <Button variant="contained" color="primary" sx={{width:'150px'}}>
-                View All Claims
-              </Button>
+             <Box sx={{display:'flex', alignItem:'center', justifyContent:"space-between", pb:1}}>
+              <h2 color="initial" style={{fontWeight:700}}>
+                Accepted Claims
+              </h2>
+              <TextField 
+                id="searchRejected" 
+                label="Search" 
+                variant="outlined" 
+                type="text"
+                value={rejectedClaimsSearch}
+                onChange={(e)=>setRejectedClaimsSearch(e.target.value)}
+              />
             </Box>
             {rejectedClaims && rejectedClaims.length > 0?(
               <TableContainer component={Paper}>
@@ -346,8 +493,8 @@ export default function Claims() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {rejectedClaims.map((claim)=>(
-                      <Row key={claim.claimId} row={claim} />
+                    {filteredRejectedClaims.map((claim)=>(
+                      <Row key={claim.claimId} row={claim} type="rejected"/>
                     ))}
                   </TableBody>
                 </Table>

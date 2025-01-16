@@ -57,16 +57,19 @@
 // ClaimController.js
 
 // Update claim status (approve or reject)
+const claimModel = require('../Models/Claim');
+const nodemailer = require('nodemailer');
+
 exports.updateClaimStatus = async (req, res) => {
     try {
-        const { claimId, status } = req.body;
+        const { _id, status } = req.body;
 
-        if (!claimId || !status) {
+        if (!_id || !status) {
             return res.status(400).json({ message: 'Claim ID and status are required' });
         }
 
-        const updatedClaim = await Claim.findByIdAndUpdate(
-            claimId,
+        const updatedClaim = await claimModel.findByIdAndUpdate(
+            _id,
             { status },
             { new: true }
         );
@@ -81,6 +84,50 @@ exports.updateClaimStatus = async (req, res) => {
         res.status(500).json({ message: 'Failed to update claim status', error: error.message });
     }
 };
+
+exports.acceptCliam = async (req, res) => {
+    try {
+        const { _id, status, acceptedAmount} = req.body;
+        if (!_id || !status) {
+            return res.status(400).json({ message: 'Claim ID and status are required' });
+        }
+        const updatedClaim = await claimModel.findByIdAndUpdate(
+            _id,
+            { status, acceptedAmount },
+            { new: true }
+        );
+
+        if (!updatedClaim) {
+            return res.status(404).json({ message: 'Claim not found' });
+        }
+        res.status(200).json({ message: 'Claim status updated successfully', updatedClaim });
+    } catch (error) {
+        console.error("Error updating claim status:", error);
+        res.status(500).json({ message: 'Failed to update claim status', error: error.message });
+    }
+}
+
+exports.rejectCliam = async (req, res) => {
+    try {
+        const { _id, status, adminDescription} = req.body;
+        if (!_id || !status) {
+            return res.status(400).json({ message: 'Claim ID and status are required' });
+        }
+        const updatedClaim = await claimModel.findByIdAndUpdate(
+            _id,
+            { status, adminDescription },
+            { new: true }
+        );
+
+        if (!updatedClaim) {
+            return res.status(404).json({ message: 'Claim not found' });
+        }
+        res.status(200).json({ message: 'Claim status updated successfully', updatedClaim });
+    } catch (error) {
+        console.error("Error updating claim status:", error);
+        res.status(500).json({ message: 'Failed to update claim status', error: error.message });
+    }
+}
 
 // Get all pending claims
 exports.getPendingClaims = async (req, res) => {
@@ -102,4 +149,31 @@ exports.getApprovedClaims = async (req, res) => {
         console.error("Error fetching approved claims:", error);
         res.status(500).json({ message: 'Error fetching approved claims', error: error.message });
     }
+};
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'geeshanthisera1234@gmail.com',
+        pass: 'qr gq kf ot vn iy tt xi',
+    },
+});
+
+// Endpoint to send email
+exports.sendEmail = async (req, res) => {
+    const { email, message } = req.body;
+
+    const mailOptions = {
+        from: 'geeshanthisera1234@gmail.com',
+        to: email,
+        subject: 'Payment Confirmation',
+        text: message,
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+            return res.status(500).send('Failed to send email');
+        }
+        res.status(200).send('Email sent successfully');
+    });
 };
