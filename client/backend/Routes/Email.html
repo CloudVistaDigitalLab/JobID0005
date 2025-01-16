@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        h2 {
+            color: #4CAF50;
+        }
+        .footer {
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Hello, {{username}}!</h2>
+        <p>We are pleased to confirm that your recent payment has been successfully processed. Below are the details of your payment:</p>
+        
+        <h3>Payment Details:</h3>
+        <ul>
+            <li><strong>Company:</strong> Vehicle Insurance Co.{{username}}</li>
+            <li><strong>Amount Paid:</strong> ${{paymentAmount}}</li>
+            <li><strong>Subscription Status:</strong> Active</li>
+        </ul>
+
+        <p>Thank you for your continued trust in our services. If you have any questions, feel free to contact our customer support team.</p>
+
+        <p><strong>Date:</strong> {{currentDate}}</p>
+
+        <p>Best regards,</p>
+        <p>The Finance Team at Vehicle Insurance Co.</p>
+    </div>
+
+    <div class="footer">
+        <p>This is an auto-generated message, and no reply is required.</p>
+    </div>
+
+</body>
+</html>

@@ -154,8 +154,8 @@ exports.getApprovedClaims = async (req, res) => {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'geeshanthisera1234@gmail.com',
-        pass: 'qr gq kf ot vn iy tt xi',
+        user: 'cmoment87@gmail.com',
+        pass: 'qa er al uo gm pr fk hk',
     },
 });
 
@@ -164,7 +164,7 @@ exports.sendEmail = async (req, res) => {
     const { email, message, subject } = req.body;
 
     const mailOptions = {
-        from: 'geeshanthisera1234@gmail.com',
+        from: 'cmoment87@gmail.com',
         to: email,
         subject: subject,
         text: message,

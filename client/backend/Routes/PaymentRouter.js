@@ -79,10 +79,36 @@ router.post('/payments', async (req, res) => {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'geeshanthisera1234@gmail.com',
-        pass: 'qr gq kf ot vn iy tt xi', // Ensure this is secure
+        user: 'cmoment87@gmail.com',
+        pass: 'qa er al uo gm pr fk hk', // Ensure this is secure
     },
 });
+
+
+
+// router.post('/send-email', (req, res) => {
+//   const { email, message } = req.body;
+//   const source = fs.readFileSync('Email.html', 'utf-8').toString();
+//   const template = handlebars.compile(source)
+//   const htmlToSend = template(replacements)
+//   const replacements = {
+//     username:'Geeshan'
+//   }
+//   const mailOptions = {
+//       from: '',
+//       to: email,
+//       subject: 'Payment Confirmation',
+//       text: message,
+//       html:htmlToSend,
+//   };
+
+//   transporter.sendMail(mailOptions, (err, info) => {
+//       if (err) {
+//           return res.status(500).send('Failed to send email');
+//       }
+//       res.status(200).send('Email sent successfully');
+//   });
+// });
 
 
 // Endpoint to send email
@@ -90,7 +116,7 @@ router.post('/send-email', (req, res) => {
     const { email, message } = req.body;
 
     const mailOptions = {
-        from: 'geeshanthisera1234@gmail.com',
+        from: 'cmoment87@gmail.com',
         to: email,
         subject: 'Payment Confirmation',
         text: message,
@@ -111,7 +137,7 @@ router.post('/send-email/renew', (req, res) => {
   const { email, message } = req.body;
 
   const mailOptions = {
-      from: 'geeshanthisera1234@gmail.com',
+      from: 'cmoment87@gmail.com',
       to: email,
       subject: 'Insurance Plan Renew Confirmation',
       text: message,
@@ -133,7 +159,7 @@ router.post('/send-email/unsubscribe', (req, res) => {
   const { email, message } = req.body;
 
   const mailOptions = {
-      from: 'geeshanthisera1234@gmail.com',
+      from: 'cmoment87@gmail.com',
       to: email,
       subject: 'Unsubscribe Plan',
       text: message,
@@ -420,7 +446,7 @@ router.post('/send-email/contactUs', (req, res) => {
 
   const mailOptions = {
       from: email,
-      to: 'geeshanthisera1234@gmail.com',
+      to: 'cmoment87@gmail.com',
       subject: about,
       text: message,
   };

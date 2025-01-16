@@ -142,9 +142,9 @@ function Login() {
                 <Button type='submit' variant="contained">Login</Button>
                 <br/>
                 <br/>
-                <span>Does't have an account ?
+                {/* <span>Does't have an account ?
                     <Link to="/signup">Signup</Link>
-                </span>
+                </span> */}
             </form>
             <ToastContainer />
         </Card>

@@ -17,7 +17,7 @@ import ClaimList from './components/ClaimList';
 import ViewAllClaims from './components/AdminViewAllClaims';
 import BuyInsurancePlan from './components/BuyInsurancePlan';
 import AppAppBar from './components/AppAppBar';
-import AppBar from './components/AppBar';
+
 
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';

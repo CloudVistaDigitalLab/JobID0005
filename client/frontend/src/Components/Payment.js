@@ -165,7 +165,7 @@ const Payment = () => {
             });
     };
 
-
+    
     // Function to send email using the backend API
     const sendEmail = (email) => {
         const emailData = {
@@ -189,6 +189,8 @@ The Finance Team at Vehicle Insurance Co.
 
 Note: This is an auto-generated message, and no reply is required.
 `, 
+
+
         };
 
         fetch('http://localhost:4000/api/send-email', {

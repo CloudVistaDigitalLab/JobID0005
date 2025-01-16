@@ -268,6 +268,11 @@ function Home() {
         navigate(`/unsubscribepage`);
     };
 
+    const handleRenewNavigation = (id) => {
+        navigate(`/pay-insurance/${id}`);
+    };
+
+
 
     useEffect(() => {
         fetchPlansDetails();
@@ -666,7 +671,7 @@ function Home() {
                                                     variant="contained"
                                                     color="primary"
                                                     sx={{ marginTop: 2 }}
-                                                    onClick={() => handleNavigation(client._id)} 
+                                                    onClick={() => handleRenewNavigation(client._id)} 
                                                 >
                                                     Renew The Plan
                                                 </Button>
