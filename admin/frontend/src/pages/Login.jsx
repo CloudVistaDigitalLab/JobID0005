@@ -6,8 +6,40 @@ import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import TextField from '@mui/material/TextField'
 
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
 
 function Login() {
+
+    const [openSnack, setOpenSnack] = React.useState(false);
+    const [snackMsg, setSnackMsg] = React.useState('');
+
+    const handleClickSnack = () => {
+        setOpenSnack(true);
+    };
+
+    const handleCloseSnack = (event, reason) => {
+        if (reason === 'clickaway') {
+        return;
+        }
+
+        setOpenSnack(false);
+    };
+
+    const action = (
+        <React.Fragment>
+        <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={handleCloseSnack}
+        >
+            <CloseIcon fontSize="small" />
+        </IconButton>
+        </React.Fragment>
+    );
 
     const [loginInfo, setLoginInfo] = useState({
         email: '',
@@ -28,7 +60,8 @@ function Login() {
         e.preventDefault();
         const { email, password } = loginInfo;
         if (!email || !password) {
-            return handleError('email and password are required')
+            return setSnackMsg('email and password are required')
+            handleClickSnack();
         }
         try {
             const url = `${process.env.REACT_APP_API_URL}/auth/login`;
@@ -42,27 +75,40 @@ function Login() {
             const result = await response.json();
             const { success, message, jwtToken, name, error, email } = result;
             if (success) {
-                handleSuccess(message);
+                setSnackMsg(message);
+                handleClickSnack();
                 localStorage.setItem('token', jwtToken);
                 localStorage.setItem('loggedInUser', name);
                 localStorage.setItem('loggedInUserEmail', email);
+                localStorage.setItem("currentPath", "/dashboard")
                 setTimeout(() => {
-                    navigate('/adminHome')
-                }, 1000)
+                    navigate('/dashboard')
+                }, 3000)
             } else if (error) {
                 const details = error?.details[0].message;
-                handleError(details);
+                setSnackMsg(details);
+                handleClickSnack();
             } else if (!success) {
-                handleError(message);
+                setSnackMsg(message);
+                handleClickSnack();
             }
             console.log(result);
         } catch (err) {
-            handleError(err);
+            setSnackMsg(err);
+            handleClickSnack();
         }
     }
 
     return (
         <Card className='container'>
+            <Snackbar
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                open={openSnack}
+                autoHideDuration={6000}
+                onClose={handleCloseSnack}
+                message={snackMsg}
+                action={action}
+                />
             <h1>Login</h1>
             <form onSubmit={handleLogin}>
                 <div>

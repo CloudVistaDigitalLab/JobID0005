@@ -25,6 +25,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import Snackbar from '@mui/material/Snackbar';
+
+import { handleError, handleSuccess } from '../utils';
+
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -80,9 +84,46 @@ function Row(props) {
   const handleCloseImage = () => {
     setOpenImage(false);
   };
+
+  const [openSnack, setOpenSnack] = React.useState(false);
+  const [snackMsg, setSnackMsg] = React.useState('');
+
+  const handleClickSnack = () => {
+    setOpenSnack(true);
+  };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
+
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleCloseSnack}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
   
   return (
     <React.Fragment>
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        open={openSnack}
+        autoHideDuration={6000}
+        onClose={handleCloseSnack}
+        message={snackMsg}
+        action={action}
+        
+      />
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell>
           <IconButton
@@ -180,24 +221,66 @@ function Row(props) {
         onClose={handleCloseRejected}
         PaperProps={{
           component: 'form',
-          onSubmit: (event) => {
+          onSubmit: async (event) => {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
             const adminDescription = formJson.adminDescription;
-            axios.patch(`http://localhost:4002/claims/reject-claim`, {
+            /*axios.patch(`http://localhost:4002/claims/reject-claim`, {
               _id: row._id,
               status: 'Rejected',
               adminDescription,
             })
-            handleCloseRejected();
+            handleCloseRejected();*/
+            try {
+              const userId = row.userId; 
+              const userResponse = await axios.get(`http://localhost:4002/user/get-by-id/${userId}`);
+          
+              if (userResponse.status === 200 && userResponse.data) {
+                const userEmail = userResponse.data.email;
+          
+                const emailResponse = await axios.post(`http://localhost:4002/claims/send-email`, {
+                  email: userEmail,
+                  message: `The claim with ID ${row.claimId} has been Rejected. The reason is "${adminDescription}"`,
+                  subject: "Claim Rejection Notification",
+                });
+          
+                if (emailResponse.status === 200) {
+                  console.log("Email sent successfully:", emailResponse.data);
+                } else {
+                  console.error("Failed to send email:", emailResponse.data);
+                }
+              } else {
+                console.error("Failed to fetch user details:", userResponse.data);
+              }
+          
+              await axios.patch(`http://localhost:4002/claims/reject-claim`, {
+                _id: row._id,
+              status: 'Rejected',
+              adminDescription,
+              });
+          
+              console.log("Claim status updated successfully");
+              handleCloseAccepted();
+             
+              setSnackMsg("Claim rejected successfully!");
+              handleClickSnack();
+              setTimeout(()=>{
+                window.location.reload();
+              }, 3000)
+              
+            } catch (error) {
+              console.error("Error in the onSubmit process:", error.response?.data || error.message);
+              setSnackMsg("Failed to reject claim!");
+              handleClickSnack();
+            }
           },
         }}
       >
         <DialogTitle>Cliam Rejection Confiramtion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Do you want to reject the claim {row.claimId}?
+            Do you want to reject the claim {row.userId}?
           </DialogContentText>
           <TextField
             autoFocus
@@ -220,17 +303,58 @@ function Row(props) {
         onClose={handleCloseAccepted}
         PaperProps={{
           component: 'form',
-          onSubmit: (event) => {
+          onSubmit: async (event) => {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries(formData.entries());
             const acceptedAmount = formJson.acceptedAmount;
-            axios.patch(`http://localhost:4002/claims/accept-claim`, {
+            /*axios.patch(`http://localhost:4002/claims/accept-claim`, {
               _id: row._id,
               status: 'Accepted',
               acceptedAmount,
             })
-            handleCloseAccepted();
+            handleCloseAccepted();*/
+            try {
+              const userId = row.userId; 
+              const userResponse = await axios.get(`http://localhost:4002/user/get-by-id/${userId}`);
+          
+              if (userResponse.status === 200 && userResponse.data) {
+                const userEmail = userResponse.data.email;
+          
+                const emailResponse = await axios.post(`http://localhost:4002/claims/send-email`, {
+                  email: userEmail,
+                  message: `The claim with ID ${row.claimId} has been accepted for the amount of ${acceptedAmount}.`,
+                  subject: "Claim Acceptance Notification",
+                });
+          
+                if (emailResponse.status === 200) {
+                  console.log("Email sent successfully:", emailResponse.data);
+                } else {
+                  console.error("Failed to send email:", emailResponse.data);
+                }
+              } else {
+                console.error("Failed to fetch user details:", userResponse.data);
+              }
+          
+              await axios.patch(`http://localhost:4002/claims/accept-claim`, {
+                _id: row._id,
+                status: 'Accepted',
+                acceptedAmount,
+              });
+          
+              console.log("Claim status updated successfully");
+              handleCloseAccepted();
+
+              setSnackMsg("Claim accepted successfully!");
+              handleClickSnack();
+              setTimeout(()=>{
+                window.location.reload();
+              }, 3000)
+            } catch (error) {
+              console.error("Error in the onSubmit process:", error.response?.data || error.message);
+              setSnackMsg("Failed to accept claim!");
+              handleClickSnack();
+            }
           },
         }}
       >
