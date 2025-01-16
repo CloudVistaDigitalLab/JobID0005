@@ -94,12 +94,12 @@ function Home() {
             handleClose();
             return;
         }
-    
+
         if (!selectedReason) {
             alert('Please select a reason for unsubscribing.');
             return;
         }
-    
+
         setLoading(true);
         const token = localStorage.getItem('token');
         if (!token) {
@@ -107,21 +107,21 @@ function Home() {
             setLoading(false);
             return;
         }
-    
+
         try {
             const decodedToken = jwtDecode(token);
             const userId = decodedToken._id;
-    
+
             const response = await axios.get(`http://localhost:4000/api/payments/${paymentId}`);
             const paymentData = response.data;
             const subscriptionEndDate = paymentData.paymentInfo.subscriptionEndDate;
-    
+
             if (!subscriptionEndDate) {
                 console.error('No subscription end date found');
                 setLoading(false);
                 return;
             }
-    
+
             const unsubscribeData = {
                 userId,
                 paymentId,
@@ -131,13 +131,13 @@ function Home() {
                 vehicleDetails: paymentData.vehicleDetails,
                 paymentInfo: paymentData.paymentInfo,
             };
-    
+
             const unsubscribeResponse = await axios.post('http://localhost:4000/api/unsubscribe', unsubscribeData);
-    
+
             if (unsubscribeResponse.data.success) {
                 await axios.delete(`http://localhost:4000/api/delete/${paymentId}`);
                 console.log('Unsubscribed successfully');
-                
+
                 // Send confirmation email
                 sendEmail(paymentData.clientInfo.emailAddress, {
                     subscriptionEndDate,
@@ -146,7 +146,7 @@ function Home() {
                     vehicleDetails: paymentData.vehicleDetails,
                     paymentInfo: paymentData.paymentInfo,
                 });
-    
+
                 setLoading(false);
                 handleClose();
                 fetchPlansDetails();
@@ -155,13 +155,13 @@ function Home() {
                 console.error('Error during unsubscribe process');
                 setLoading(false);
             }
-    
+
         } catch (error) {
             console.error('Error during unsubscribe process:', error);
             setLoading(false);
         }
     };
-    
+
 
 
 
@@ -170,7 +170,7 @@ function Home() {
 
     const sendEmail = (email, details) => {
         const { subscriptionEndDate, reason, clientInfo, vehicleDetails, paymentInfo } = details;
-    
+
         const emailData = {
             email: email,
             message: `Subject: Unsubscription Confirmation
@@ -230,7 +230,7 @@ function Home() {
     **Note: This is an automated email. Please do not reply to this message.
     `,
         };
-    
+
         fetch('http://localhost:4000/api/send-email', {
             method: 'POST',
             headers: {
@@ -246,7 +246,7 @@ function Home() {
                 console.error('Error sending email:', error);
             });
     };
-    
+
 
 
     const onDelete = async (id) => {
@@ -267,7 +267,7 @@ function Home() {
     const handleNavigation = (id) => {
         navigate(`/unsubscribepage`);
     };
-    
+
 
     useEffect(() => {
         fetchPlansDetails();
@@ -524,8 +524,8 @@ function Home() {
                                             <Grid item xs={12} sm={6} md={4} key={index}>
                                                 <Paper sx={{ padding: 2, marginBottom: 2 }}>
                                                     <Typography variant="h5">Owner Information</Typography>
-                                                    
-                                                    <Typography sx={{color:'#F01010'}}><strong>PolicyID: {client.policyId}</strong></Typography>
+
+                                                    <Typography sx={{ color: '#F01010' }}><strong>PolicyID: {client.policyId}</strong></Typography>
                                                     <Typography>Name: {client.clientInfo.fullName}</Typography>
                                                     <Typography>Email: {client.clientInfo.emailAddress}</Typography>
                                                     <Typography>Contact Number: {client.clientInfo.contactNumber}</Typography>
@@ -777,7 +777,26 @@ function Home() {
                         <Typography variant="body1" sx={{ marginBottom: '20px' }}>
                             Please select a reason for unsubscribing:
                         </Typography>
-                        <FormControl fullWidth sx={{ marginBottom: '20px' }}>
+                        <FormControl
+                            fullWidth
+                            sx={{
+                                marginBottom: '20px',
+                                '& .MuiInputBase-root': {
+                                    '& fieldset': {
+                                        borderColor: 'gray', // Default border color when unselected
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#2a9d8f', // Border color on hover
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#2a9d8f', // Border color when focused
+                                    },
+                                },
+                                '& .MuiSelect-select': {
+                                    color: '#000', // Text color of the selected option
+                                },
+                            }}
+                        >
                             <InputLabel id="reason-select-label">Reason</InputLabel>
                             <Select
                                 labelId="reason-select-label"
@@ -797,6 +816,8 @@ function Home() {
                                 <MenuItem value="Other reasons">Other reasons</MenuItem>
                             </Select>
                         </FormControl>
+
+
                         <Box sx={modalActionsStyle}>
                             <Button
                                 variant="outlined"

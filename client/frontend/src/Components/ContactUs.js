@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Grid, Alert, CircularProgress } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Alert, CircularProgress, Paper } from '@mui/material';
 import axios from 'axios';
 
 function ContactUs() {
@@ -53,10 +53,20 @@ function ContactUs() {
             padding: '20px',
             borderRadius: '8px',
         }}>
-            <Typography variant="h3" sx={{ textAlign: 'center', marginBottom: 4, fontWeight: 'bold', color: '#333' }}>
+            <Paper elevation={3}
+                sx={{
+                    padding: 4,
+                    borderRadius: 2,
+                    marginBottom: 4,
+                    width: '95%',
+                    maxWidth: '1500px',
+                    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                    
+                }}>
+                    <Typography variant="h3" sx={{ textAlign: 'center', marginBottom: 4, fontWeight: 'bold',  }}>
                 Contact Us
             </Typography>
-            <Typography variant="body1" sx={{ textAlign: 'center', marginBottom: 4, color: '#555' }}>
+            <Typography variant="body1" sx={{ textAlign: 'center', marginBottom: 4,  }}>
                 Have questions or need assistance? Get in touch with us, and we’ll be happy to help!
             </Typography>
             <Grid container spacing={4}>
@@ -65,7 +75,7 @@ function ContactUs() {
                     <Typography variant="h5" sx={{
                         fontWeight: 'bold',
                         marginBottom: 2,
-                        color: '#333',
+                        
                         textAlign: 'left'
                     }}>
                         Get in Touch
@@ -73,7 +83,7 @@ function ContactUs() {
 
                     <Typography variant="body1" sx={{
                         marginBottom: 2,
-                        color: '#555',
+                        
                         lineHeight: 1.7
                     }}>
                         <strong>Phone:</strong> <b>+1 800-555-1234</b> <br />
@@ -84,7 +94,7 @@ function ContactUs() {
                     <Typography variant="h6" sx={{
                         fontWeight: 'bold',
                         marginTop: 4,
-                        color: '#333'
+                        
                     }}>
                         Business Hours
                     </Typography>
@@ -92,13 +102,13 @@ function ContactUs() {
                     <Typography variant="h6" sx={{
                         fontWeight: 'bold',
                         marginTop: 4,
-                        color: '#333'
+                        
                     }}>
                         Frequently Asked Questions (FAQ)
                     </Typography>
                     <Typography variant="body1" sx={{
                         marginBottom: 2,
-                        color: '#555',
+                        
                         lineHeight: 1.7
                     }}>
                         <strong>Q:</strong> What is the best way to contact support? <br />
@@ -110,19 +120,26 @@ function ContactUs() {
                     <Typography variant="h6" sx={{
                         fontWeight: 'bold',
                         marginTop: 4,
-                        color: '#333'
+                        
                     }}>
                         Follow Us
                     </Typography>
                     <Typography variant="body1" sx={{
-                        marginBottom: 2,
-                        color: '#555',
-                        lineHeight: 1.7
-                    }}>
-                        <strong>Facebook:</strong> <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">facebook.com/vehicleinsuranceco.</a><br />
-                        <strong>Twitter:</strong> <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">twitter.com/vehicleinsuranceco.</a><br />
-                        <strong>Instagram:</strong> <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">instagram.com/vehicleinsuranceco.</a>
-                    </Typography>
+    marginBottom: 2,
+    lineHeight: 1.7,
+    '& a': {
+        color: '#2a9d8f', // Make the links green
+        textDecoration: 'none', // Remove underline
+        '&:hover': {
+            textDecoration: 'underline', // Add underline on hover
+        }
+    }
+}}>
+    <strong>Facebook:</strong> <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">facebook.com/vehicleinsuranceco.</a><br />
+    <strong>Twitter:</strong> <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">twitter.com/vehicleinsuranceco.</a><br />
+    <strong>Instagram:</strong> <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">instagram.com/vehicleinsuranceco.</a>
+</Typography>
+
                 </Grid>
 
                 
@@ -191,6 +208,8 @@ function ContactUs() {
                     </form>
                 </Grid>
             </Grid>
+
+            </Paper>
         </Box>
     );
 }

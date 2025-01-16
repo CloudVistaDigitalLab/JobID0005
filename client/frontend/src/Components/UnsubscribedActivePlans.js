@@ -84,7 +84,11 @@ const UnsubscribedActivePlans = () => {
                                                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Plan Details</Typography>
 
 
-                                                <Typography variant="body1"><strong>Subscription End Date:</strong> {plan.subscriptionEndDate}</Typography>
+                                                <Typography variant="body1">
+                                                    <strong>Subscription End Date : </strong>
+                                                    {new Date(plan.subscriptionEndDate).toISOString().split('T')[0]}
+                                                </Typography>
+
                                                 <Typography variant="body1" sx={{ color: '#F01010' }}><strong>{activeDays} days more</strong></Typography>
                                             </Box>
 

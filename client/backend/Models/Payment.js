@@ -37,11 +37,19 @@ const paymentSchema = new mongoose.Schema({
       },
     },
     isExpired: { type: Boolean, default: false },
-    subscriptionEndDate: { type: Date, default: function () {
-      const paymentDate = new Date(this.paymentInfo.paymentDate);
-      paymentDate.setFullYear(paymentDate.getFullYear() + 1);
-      return paymentDate;
-    }},
+    subscriptionEndDate: { 
+      type: Date, 
+      default: function () {
+        const paymentDate = new Date(this.paymentInfo.paymentDate);
+        paymentDate.setFullYear(paymentDate.getFullYear() + 1);
+    
+        // Format the date to display only year, month, and day
+        const formattedDate = `${paymentDate.getFullYear()}-${String(paymentDate.getMonth() + 1).padStart(2, '0')}-${String(paymentDate.getDate()).padStart(2, '0')}`;
+    
+        return formattedDate;
+      }
+    }
+    
   },
 });
 

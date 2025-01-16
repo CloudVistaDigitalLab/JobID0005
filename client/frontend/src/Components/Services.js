@@ -21,7 +21,7 @@ function Services() {
         {
             title: 'Online Claim Processing',
             description: 'File claims online and track their status in real-time. We ensure a seamless process from submission to resolution.',
-            image: 'https://images.pexels.com/photos/4199526/pexels-photo-4199526.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+            image: 'https://images.pexels.com/photos/3987020/pexels-photo-3987020.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
         },
         {
             title: 'Policy Comparison',
