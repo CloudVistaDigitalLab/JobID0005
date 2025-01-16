@@ -19,7 +19,7 @@ const unsubscribeSchema = new mongoose.Schema({
       return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     },
   },
-  reason: { type: String, required :true}, // Reason for unsubscribing
+  reason: { type: String, required :true}, 
   clientInfo: {
     fullName: { type: String,  },
     dateOfBirth: { type: String,  },
@@ -46,6 +46,6 @@ const unsubscribeSchema = new mongoose.Schema({
     paymentDate: String,
     isExpired: Boolean,
   },
-}, { timestamps: true }); // Adds createdAt and updatedAt fields
+}, { timestamps: true }); 
 
 module.exports = mongoose.model('Unsubscribe', unsubscribeSchema, 'unsubscribedPlans');

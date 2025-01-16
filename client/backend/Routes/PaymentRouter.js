@@ -2,7 +2,7 @@ const express = require('express');
 const cron = require('node-cron');
 const router = express.Router();
 const { Payment, PolicyCounter } = require('../Models/Payment');
-const Unsubscribe = require('../Models/Unsubscribe'); // Assuming the Unsubscribe model is defined
+const Unsubscribe = require('../Models/Unsubscribe'); 
 
 const nodemailer = require('nodemailer');
 
@@ -105,6 +105,49 @@ router.post('/send-email', (req, res) => {
 });
 
 
+
+
+router.post('/send-email/renew', (req, res) => {
+  const { email, message } = req.body;
+
+  const mailOptions = {
+      from: 'geeshanthisera1234@gmail.com',
+      to: email,
+      subject: 'Insurance Plan Renew Confirmation',
+      text: message,
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+          return res.status(500).send('Failed to send email');
+      }
+      res.status(200).send('Email sent successfully');
+  });
+});
+
+
+
+
+
+router.post('/send-email/unsubscribe', (req, res) => {
+  const { email, message } = req.body;
+
+  const mailOptions = {
+      from: 'geeshanthisera1234@gmail.com',
+      to: email,
+      subject: 'Unsubscribe Plan',
+      text: message,
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+          return res.status(500).send('Failed to send email');
+      }
+      res.status(200).send('Email sent successfully');
+  });
+});
+
+
 router.get('/user-payments/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -118,14 +161,14 @@ router.get('/user-payments/:userId', async (req, res) => {
 
 router.get('/user-payments/payId/:id', async (req, res) => {
   try {
-    const { id } = req.params;  // Get the 'id' from the URL parameters
-    const payment = await Payment.findById(id);  // Use findById to get a single payment by its ID
+    const { id } = req.params;  
+    const payment = await Payment.findById(id);  
     
     if (!payment) {
-      return res.status(404).json({ message: 'Payment not found' }); // If no payment found, return 404
+      return res.status(404).json({ message: 'Payment not found' }); 
     }
     
-    res.json(payment);  // Return the found payment
+    res.json(payment);  
   } catch (error) {
     res.status(500).json({ message: 'Error fetching payment' });
   }
@@ -141,7 +184,7 @@ router.get('/payments/non-expired/:userId', async (req, res) => {
       
       const payments = await Payment.find({
         userId: userId,
-        'paymentInfo.isExpired': false // Only non-expired plans
+        'paymentInfo.isExpired': false 
       });
   
       if (payments.length === 0) {
@@ -161,14 +204,14 @@ router.get('/payments/non-expired/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
 
-        // Fetch non-expired payment plans for the user
+        
         const payment = await Payment.findOne({ userId, isExpired: false });
 
         if (!payment) {
             return res.status(404).json({ message: 'No active payment plan found.' });
         }
 
-        return res.json(payment); // Return the payment details
+        return res.json(payment); 
     } catch (error) {
         console.error('Error fetching payment plan:', error);
         return res.status(500).json({ message: 'Server error' });
@@ -182,7 +225,7 @@ router.get('/payments/non-expired/:userId', async (req, res) => {
       
       const payments = await Payment.find({
         userId: userId,
-        'paymentInfo.isExpired': true // Only expired plans
+        'paymentInfo.isExpired': true 
       });
   
       if (payments.length === 0) {
@@ -206,10 +249,10 @@ router.get('/payments/non-expired/:userId', async (req, res) => {
         return res.status(404).json({ message: 'Payment plan not found.' });
       }
   
-      // Log the subscriptionEndDate to ensure it is being stored correctly
+      
       console.log('Subscription End Date:', payment.paymentInfo.subscriptionEndDate);
   
-      return res.json(payment); // Send the payment details as a JSON response
+      return res.json(payment); 
     } catch (error) {
       console.error('Error fetching payment plan:', error);
       return res.status(500).json({ message: 'Server error' });
@@ -228,13 +271,13 @@ router.put('/payments/renew/:id', async (req, res) => {
 
     const paymentId = req.params.id;
 
-    // Prepare the update object
+    
     const updateData = {
       'paymentInfo.isExpired': false,
-      'paymentInfo.paymentDate': new Date().toISOString().split('T')[0], // Current date in 'YYYY-MM-DD' format
+      'paymentInfo.paymentDate': new Date().toISOString().split('T')[0], 
     };
 
-    // Update the payment info
+    
     const updatedPayment = await Payment.findByIdAndUpdate(
       paymentId,
       updateData,
@@ -254,17 +297,17 @@ router.put('/payments/renew/:id', async (req, res) => {
 
 
 const authenticateToken = (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1]; // Assuming the token is passed as "Bearer <token>"
+  const token = req.headers['authorization']?.split(' ')[1]; 
   if (!token) return res.status(401).json({ message: 'Access Denied' });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return res.status(403).json({ message: 'Invalid Token' });
-    req.user = decoded; // Save the decoded token (user info) in the request
+    req.user = decoded; 
     next();
   });
 };
 
-// Route to handle unsubscribe requests
+
 
 
 
@@ -313,9 +356,9 @@ router.post('/unsubscribe', async (req, res) => {
         paymentInfo,
       } = req.body;
   
-      const unsubscribeDate = new Date().toISOString().split('T')[0]; // Current date in 'YYYY-MM-DD' format
+      const unsubscribeDate = new Date().toISOString().split('T')[0]; 
   
-      // Save the unsubscribe data
+      
       const unsubscribe = new Unsubscribe({
         userId,
         paymentId,
@@ -416,7 +459,7 @@ cron.schedule('*/10 * * * * *', async () => {
 
     for (const payment of payments) {
       const paymentDate = new Date(payment.paymentInfo.paymentDate);
-      const diffInDays = Math.floor((today - paymentDate) / (1000 * 60 * 60 * 24)); // Calculate the difference in days
+      const diffInDays = Math.floor((today - paymentDate) / (1000 * 60 * 60 * 24)); 
 
       if (diffInDays > 365 && !payment.paymentInfo.isExpired) {
         payment.paymentInfo.isExpired = true;

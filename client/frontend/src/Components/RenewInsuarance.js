@@ -4,7 +4,7 @@ import axios from 'axios';
 import { TextField, Button, Typography, Box, Modal, Grid, CircularProgress, Container } from '@mui/material';
 
 const RenewPayment = () => {
-  const { id } = useParams(); // Get payment ID from URL
+  const { id } = useParams(); 
   const navigate = useNavigate();
   const [paymentData, setPaymentData] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -33,7 +33,7 @@ const RenewPayment = () => {
       try {
         const response = await axios.get(`http://localhost:4000/api/payments/${id}`);
         setPaymentData(response.data);
-        setPaymentInfo(response.data.paymentInfo); // Populate form with paymentInfo
+        setPaymentInfo(response.data.paymentInfo); 
       } catch (error) {
         console.error('Error fetching payment details:', error);
       }
@@ -51,9 +51,9 @@ const RenewPayment = () => {
 
     setOpenModal(false);
 
-    // Start the loading state
+    
     setLoading(true);
-    // Send updated payment details to backend
+    
     try {
       await axios.put(`http://localhost:4000/api/payments/renew/${id}`, { paymentInfo });
 
@@ -63,13 +63,13 @@ const RenewPayment = () => {
       setTimeout(() => {
         setLoading(false);
         navigate('/home');
-      }, 3500); // Redirect to a relevant page
+      }, 3500); 
     } catch (error) {
       console.error('Error renewing payment plan:', error);
     }
   };
 
-  // Check if paymentData is null and prevent rendering until data is available
+ 
   if (!paymentData) {
     return <Typography>Loading...</Typography>;
   }
@@ -97,10 +97,10 @@ Best regards,
 The Finance Team at Vehicle Insurance Co.
 
 Note: This is an auto-generated message, and no reply is required.
-`, // Renewal confirmation email message
+`, 
     };
 
-    fetch('http://localhost:4000/api/send-email', {
+    fetch('http://localhost:4000/api/send-email/renew', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -122,10 +122,10 @@ Note: This is an auto-generated message, and no reply is required.
     <Box
       maxWidth="lg"
       sx={{
-        position: 'relative',  // Use absolute positioning for centering
-        top: '50%',            // Vertically center
-        left: '17%',           // Horizontally center
-        // Adjust position to truly center
+        position: 'relative',  
+        top: '50%',            
+        left: '17%',           
+        
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -135,8 +135,8 @@ Note: This is an auto-generated message, and no reply is required.
         padding: '5px',
         borderRadius: 2,
         boxShadow: 2,
-        height: 'auto',  // You can adjust the height based on the content's size
-        width: '100%',  // Adjust width accordingly
+        height: 'auto',  
+        width: '100%',  
 
       }}
     >

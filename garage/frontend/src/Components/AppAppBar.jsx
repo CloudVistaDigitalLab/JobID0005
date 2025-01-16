@@ -11,16 +11,16 @@ import ToggleColorMode from './toggle-mode/ToggleColorMode';
 import { alpha } from '@mui/material';
 
 function AppAppBar({ mode, toggleColorMode }) {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(localStorage.getItem('token') ? true : false); // Check localStorage for login status
-  const [userName, setUserName] = React.useState(''); // Default to empty string
+  const [isLoggedIn, setIsLoggedIn] = React.useState(localStorage.getItem('token') ? true : false); 
+  const [userName, setUserName] = React.useState(''); 
 
   const navigate = useNavigate();
 
   React.useEffect(() => {
     if (isLoggedIn) {
-      // Retrieve the stored user name from localStorage
+      
       const storedUserName = localStorage.getItem('loggedInUserName');
-      setUserName(storedUserName || ''); // Use stored name or default to empty string
+      setUserName(storedUserName || ''); 
     }
   }, [isLoggedIn]);
 
@@ -43,9 +43,9 @@ function AppAppBar({ mode, toggleColorMode }) {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('loggedInUser');
-    localStorage.removeItem('loggedInUserName'); // Remove user name from localStorage
+    localStorage.removeItem('loggedInUserName'); 
     setIsLoggedIn(false);
-    setUserName(''); // Clear the user name on logout
+    setUserName(''); 
     navigate('/');
     window.location.reload();
   };

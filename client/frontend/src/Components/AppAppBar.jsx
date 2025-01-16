@@ -11,16 +11,16 @@ import ToggleColorMode from './toggle-mode/ToggleColorMode';
 import { alpha } from '@mui/material';
 
 function AppAppBar({ mode, toggleColorMode }) {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(localStorage.getItem('token') ? true : false); // Check localStorage for login status
+  const [isLoggedIn, setIsLoggedIn] = React.useState(localStorage.getItem('token') ? true : false); 
   const navigate = useNavigate();
   const [userName, setUserName] = React.useState('');
 
 
   React.useEffect(() => {
     if (isLoggedIn) {
-      // Retrieve the stored user name from localStorage
+      
       const storedUserName = localStorage.getItem('loggedInUserName');
-      setUserName(storedUserName || ''); // Use stored name or default to empty string
+      setUserName(storedUserName || ''); 
     }
   }, [isLoggedIn]);
 
@@ -105,7 +105,7 @@ function AppAppBar({ mode, toggleColorMode }) {
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <MenuItem sx={{
                   py: '6px', px: '12px', '&:hover': {
-                    backgroundColor: 'transparent', // Remove the hover background color
+                    backgroundColor: 'transparent', 
                   },
                 }} onClick={(e) => e.preventDefault()}>
                   <Typography variant="h6" sx={{ textAlign: "center", fontWeight: 'bold' }}>

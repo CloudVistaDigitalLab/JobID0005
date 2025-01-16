@@ -11,7 +11,7 @@ const UnsubscribedActivePlans = () => {
     useEffect(() => {
         if (!userId) {
             console.error('User ID not found. Please log in.');
-            return; // Prevent further execution if userId is not found
+            return; 
         }
 
         // Fetch user details from local storage
@@ -63,10 +63,10 @@ const UnsubscribedActivePlans = () => {
                         const unsubscribeDate = new Date(plan.unsubscribeDate);
                         const subscriptionEndDate = new Date(plan.subscriptionEndDate);
 
-                        // Calculate the difference in milliseconds
+                        
                         const diffTime = subscriptionEndDate - unsubscribeDate;
 
-                        // Convert milliseconds to days
+                        
                         const activeDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                         return (

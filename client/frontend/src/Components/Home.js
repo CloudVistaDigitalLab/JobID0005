@@ -231,7 +231,7 @@ function Home() {
     `,
         };
 
-        fetch('http://localhost:4000/api/send-email', {
+        fetch('http://localhost:4000/api/send-email/unsubscribe', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -280,8 +280,8 @@ function Home() {
         const storedUserName = localStorage.getItem('loggedInUserName');
         const storedUserEmail = localStorage.getItem('loggedInUserEmail');
 
-        setUserName(storedUserName || ''); // Update state with username
-        setUserEmail(storedUserEmail || ''); // Update state with email
+        setUserName(storedUserName || ''); 
+        setUserEmail(storedUserEmail || ''); 
 
         console.log('User ID:', userId);
 
@@ -298,7 +298,7 @@ function Home() {
     };
 
     const handleError = (message) => {
-        console.error(message); // Handle error appropriately, maybe show an alert or toast
+        console.error(message);
     };
 
     useEffect(() => {
@@ -308,8 +308,8 @@ function Home() {
         const storedUserName = localStorage.getItem('loggedInUserName');
         const storedUserEmail = localStorage.getItem('loggedInUserEmail');
 
-        setUserName(storedUserName || ''); // Update state with username
-        setUserEmail(storedUserEmail || ''); // Update state with email
+        setUserName(storedUserName || ''); 
+        setUserEmail(storedUserEmail || '');
 
         console.log('User ID:', userId);
 
@@ -335,22 +335,22 @@ function Home() {
 
 
     useEffect(() => {
-        // Fetch the logged-in user details from localStorage
+        
         console.log('LocalStorage:', localStorage);
 
         const userId = localStorage.getItem('loggedInUserId');
         const storedUserName = localStorage.getItem('loggedInUserName');
         const storedUserEmail = localStorage.getItem('loggedInUserEmail');
 
-        setUserName(storedUserName || ''); // Update state with username
-        setUserEmail(storedUserEmail || ''); // Update state with email
+        setUserName(storedUserName || ''); 
+        setUserEmail(storedUserEmail || ''); 
 
         console.log('User ID:', userId);
 
         if (userId) {
             axios.get(`http://localhost:4000/api/claim/getclaimbyID/${userId}`)
                 .then(response => {
-                    setClaimtData(response.data); // Set the fetched claim data
+                    setClaimtData(response.data); 
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
@@ -362,7 +362,7 @@ function Home() {
 
 
     const handleNavigationClaim = () => {
-        // Navigate to the insurance claim page and pass state to open the modal
+        
         navigate('/insurance-claim', { state: { isVerify: true } });
     };
 
@@ -451,9 +451,9 @@ function Home() {
                     style={{
                         marginTop: '20px',
                         border: '0',
-                        borderTop: '2px solid #ccc', // Green color, you can change it
-                        width: '100%', // Full width
-                        opacity: 0.5 // Set transparency
+                        borderTop: '2px solid #ccc', 
+                        width: '100%',
+                        opacity: 0.5 
                     }}
                 />
 
@@ -471,7 +471,7 @@ function Home() {
                     <Box
                         sx={{
                             width: '100%',
-                            overflowX: { xs: 'auto' }, // Horizontal scroll for small screens
+                            overflowX: { xs: 'auto' }, 
                             '& .MuiTabs-flexContainer': {
                                 flexWrap: { xs: 'nowrap', sm: 'wrap' },
                                 justifyContent: { xs: 'flex-start', sm: 'center' },
@@ -517,8 +517,8 @@ function Home() {
                             ) : (
                                 <Grid container spacing={4} sx={{ marginTop: 0 }}>
                                     {clientData.map((client, index) => {
-                                        // Ensure paymentInfo is available in each client object
-                                        const paymentInfo = client.paymentInfo; // Access paymentInfo directly
+                                        
+                                        const paymentInfo = client.paymentInfo; 
 
                                         return (
                                             <Grid item xs={12} sm={6} md={4} key={index}>
@@ -593,8 +593,8 @@ function Home() {
                                         <Grid item xs={12} sm={6} md={4} key={index}>
                                             <Paper sx={{ padding: 2, marginBottom: 2 }}>
                                                 <Typography variant="h5">Owner Information</Typography>
-                                                <Typography>Name: {claim.fullName}</Typography> {/* Corrected */}
-                                                {/* Assuming claim has an email */}
+                                                <Typography>Name: {claim.fullName}</Typography> 
+                                                
                                                 <Typography>Contact Number: {claim.contactNumber}</Typography>
                                                 <Typography>PolicyNumber: {claim.policyNumber}</Typography>
                                                 <br />
@@ -629,7 +629,7 @@ function Home() {
                             <Badge
                                 color="error"
                                 variant="dot"
-                                invisible={expiredPlans.length === 0} // Hide the dot if no expired plans
+                                invisible={expiredPlans.length === 0} 
                                 sx={{ marginRight: 1 }}
                             />
                             <Typography variant="h4" sx={{ marginBottom: 2 }} >
@@ -666,7 +666,7 @@ function Home() {
                                                     variant="contained"
                                                     color="primary"
                                                     sx={{ marginTop: 2 }}
-                                                    onClick={() => handleNavigation(client._id)} // Pass the ObjectId here
+                                                    onClick={() => handleNavigation(client._id)} 
                                                 >
                                                     Renew The Plan
                                                 </Button>
@@ -783,17 +783,17 @@ function Home() {
                                 marginBottom: '20px',
                                 '& .MuiInputBase-root': {
                                     '& fieldset': {
-                                        borderColor: 'gray', // Default border color when unselected
+                                        borderColor: 'gray', 
                                     },
                                     '&:hover fieldset': {
-                                        borderColor: '#2a9d8f', // Border color on hover
+                                        borderColor: '#2a9d8f', 
                                     },
                                     '&.Mui-focused fieldset': {
-                                        borderColor: '#2a9d8f', // Border color when focused
+                                        borderColor: '#2a9d8f', 
                                     },
                                 },
                                 '& .MuiSelect-select': {
-                                    color: '#000', // Text color of the selected option
+                                    color: '#000', 
                                 },
                             }}
                         >
@@ -866,7 +866,7 @@ const modalTitleStyle = {
     fontWeight: '600',
     fontSize: '20px',
     marginBottom: '20px',
-    color: 'black', // Corrected to 'color' instead of 'colors'
+    color: 'black', 
 };
 
 

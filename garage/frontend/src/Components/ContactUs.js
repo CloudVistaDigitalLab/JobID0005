@@ -10,7 +10,7 @@ function ContactUs() {
         about: '',
     });
     const [status, setStatus] = useState('');
-    const [loading, setLoading] = useState(false); // Added loading state
+    const [loading, setLoading] = useState(false); 
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -22,8 +22,8 @@ function ContactUs() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true); // Set loading to true when the form is being submitted
-        setStatus(''); // Reset the previous status
+        setLoading(true); 
+        setStatus(''); 
 
         try {
             const response = await axios.post('http://localhost:4005/api/send-email/contactUs', formData);
@@ -39,7 +39,7 @@ function ContactUs() {
         } catch (error) {
             setStatus('error');
         } finally {
-            setLoading(false); // Set loading to false when the request is finished
+            setLoading(false); 
         }
     };
 
@@ -128,10 +128,10 @@ function ContactUs() {
                             marginBottom: 2,
                             lineHeight: 1.7,
                             '& a': {
-                                color: '#2a9d8f', // Make the links green
-                                textDecoration: 'none', // Remove underline
+                                color: '#2a9d8f', 
+                                textDecoration: 'none', 
                                 '&:hover': {
-                                    textDecoration: 'underline', // Add underline on hover
+                                    textDecoration: 'underline', 
                                 }
                             }
                         }}>
@@ -200,7 +200,7 @@ function ContactUs() {
                             }}>
                                 {status === 'success' && <Alert severity="success" sx={{ marginBottom: 2 }}>Your message was sent successfully!</Alert>}
                                 {status === 'error' && <Alert severity="error" sx={{ marginBottom: 2 }}>There was an error sending your message. Please try again.</Alert>}
-                                {loading && <Alert severity="info" sx={{ marginBottom: 2 }}>Your message is sending...</Alert>} {/* Show sending message */}
+                                {loading && <Alert severity="info" sx={{ marginBottom: 2 }}>Your message is sending...</Alert>} 
                                 <Button variant="contained" color="primary" type="submit" sx={{ padding: '12px 24px', fontWeight: 'bold' }}>
                                     {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Send Message'}
                                 </Button>

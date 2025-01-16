@@ -3,17 +3,17 @@ import { Container, Typography, Box, Button, Grid, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 function WelcomePage() {
-    const navigate = useNavigate(); // Initialize the navigate function
+    const navigate = useNavigate(); 
 
-    // Check if the user is logged in
-    const isLoggedIn = localStorage.getItem('isLoggedIn'); // Replace with your actual authentication check
+    
+    const isLoggedIn = localStorage.getItem('isLoggedIn'); 
 
     const handleSubmitQuotationClick = () => {
-        // If the user is not logged in, redirect to the login page
+        
         if (!isLoggedIn) {
-            navigate('/login'); // Redirect to the login page using navigate
+            navigate('/login'); 
         } else {
-            navigate('/home'); // Redirect to the home page if logged in
+            navigate('/home'); 
         }
     };
 
@@ -53,9 +53,9 @@ function WelcomePage() {
                     href="#nextSteps"
                     sx={{
                         '&:hover': {
-                            backgroundColor: '#DCA056', // Change the background color on hover
-                            transform: 'scale(1.05)', // Optional: adds a slight scaling effect on hover
-                            transition: 'all 0.3s ease', // Smooth transition for the hover effect
+                            backgroundColor: '#DCA056', 
+                            transform: 'scale(1.05)', 
+                            transition: 'all 0.3s ease', 
                         }
                     }}
                 >
@@ -138,7 +138,7 @@ function WelcomePage() {
                     variant="contained"
                     color="secondary"
                     size="large"
-                    onClick={handleSubmitQuotationClick} // OnClick event now uses navigate
+                    onClick={handleSubmitQuotationClick} 
                     sx={{
                         '&:hover': {
                             backgroundColor: '#DCA056',

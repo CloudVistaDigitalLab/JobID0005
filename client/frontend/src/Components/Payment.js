@@ -82,7 +82,7 @@ const Payment = () => {
     const [vehicleDetails, setVehicleDetails] = useState({
         registrationNumber: '',
         model: '',
-        vehicleNumber:'',
+        vehicleNumber: '',
         color: '',
         type: '',
         chassisNumber: '',
@@ -103,26 +103,26 @@ const Payment = () => {
 
     const handlePayment = () => {
         setLoading(true);
-    
+
         // Get the JWT token from localStorage
         const token = localStorage.getItem('token');
-    
+
         if (!token) {
             console.error('No token found, user is not authenticated');
             return;
         }
-    
+
         // Decode the token to extract the userId (_id)
         const decodedToken = jwtDecode(token);
         const userId = decodedToken._id; // Extract the _id from the decoded token
-    
+
         const paymentData = {
             userId: userId, // Dynamically use the user’s ObjectId
             clientInfo,
             vehicleDetails,
             paymentInfo,
         };
-    
+
         // Make the payment API call
         fetch('http://localhost:4000/api/payments', {
             method: 'POST',
@@ -134,16 +134,16 @@ const Payment = () => {
             .then(response => response.json())
             .then(data => {
                 console.log('Payment saved successfully:', data);
-    
+
                 // Log the policyId returned from the backend
                 console.log('Generated Policy ID:', data.policyId);
-    
+
                 // Show loading for 4 seconds before transitioning to success message
                 setTimeout(() => {
                     setLoading(false);
                     setPaymentSuccess(true); // Show success message after 4 seconds
                 }, 4000);
-    
+
                 // Send email after 4 seconds (simulate email sending)
                 if (clientInfo.emailAddress) {
                     setTimeout(() => {
@@ -152,7 +152,7 @@ const Payment = () => {
                 } else {
                     console.error('Email is missing');
                 }
-    
+
                 // Simulate navigation to profile page after success message (2 seconds)
                 setTimeout(() => {
                     setPaymentSuccess(false); // Hide the success message after 2 seconds
@@ -164,8 +164,8 @@ const Payment = () => {
                 setLoading(false);
             });
     };
-    
-    
+
+
     // Function to send email using the backend API
     const sendEmail = (email) => {
         const emailData = {
@@ -217,37 +217,37 @@ Note: This is an auto-generated message, and no reply is required.
         } else {
             switch (name) {
                 case 'emailAddress':
-                    // Validate email format
+                    
                     if (!/\S+@\S+\.\S+/.test(sanitizedValue)) {
                         error = 'Invalid email address';
                     }
                     break;
                 case 'contactNumber':
-                    // Validate phone number (assuming 10 digits)
+                    
                     if (!/^\d{10}$/.test(sanitizedValue)) {
                         error = 'Invalid contact number';
                     }
                     break;
                 case 'cardNumber':
-                    // Validate card number and remove hyphens
+                    
                     if (!/^\d{16}$/.test(sanitizedValue.replace(/-/g, ''))) {
                         error = 'Invalid card number';
                     }
                     break;
                 case 'cvv':
-                    // Validate CVV (3 or 4 digits)
+                    
                     if (!/^\d{3,4}$/.test(sanitizedValue)) {
                         error = 'Invalid CVV';
                     }
                     break;
                 case 'expiryDate':
-                    // Only check if the expiry date is in the future
+                    
                     const [month, year] = sanitizedValue.split('/');
                     const currentDate = new Date();
-                    const currentMonth = currentDate.getMonth() + 1; // Month is 0-indexed, so add 1
-                    const currentYear = currentDate.getFullYear().toString().slice(-2); // Get current 2-digit year
+                    const currentMonth = currentDate.getMonth() + 1; 
+                    const currentYear = currentDate.getFullYear().toString().slice(-2); 
 
-                    // Check if expiry month/year is greater than or equal to current month/year
+                    
                     if (parseInt(year) < parseInt(currentYear)) {
                         error = 'Expiry date must be in the future';
                     } else if (parseInt(year) === parseInt(currentYear) && parseInt(month) < currentMonth) {
@@ -259,10 +259,10 @@ Note: This is an auto-generated message, and no reply is required.
             }
         }
 
-        // Update error state for the specific field
+        
         setErrors({ ...errors, [name]: error });
 
-        // Return whether there is an error
+        
         return error === '';
     };
 
@@ -298,7 +298,7 @@ Note: This is an auto-generated message, and no reply is required.
     const handlePrevious = () => {
         setStep(1);
     };
-    
+
 
     return (
         <div>
@@ -362,7 +362,7 @@ Note: This is an auto-generated message, and no reply is required.
                             </div>
                         ) : paymentSuccess ? (
                             <div style={{ textAlign: 'center', marginTop: 20 }}>
-                                <Successfull/>
+                                <Successfull />
                                 <Typography variant="h4" sx={{ marginBottom: 2 }}>
                                     Payment Successful
                                 </Typography>

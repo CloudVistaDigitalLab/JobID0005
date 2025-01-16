@@ -18,7 +18,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../firebaseConfig";
 
 function ClaimForm() {
-  const [imageURLs, setImageURLs] = useState([]); // Array to store multiple image URLs
+  const [imageURLs, setImageURLs] = useState([]); 
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     claimId: "",
@@ -26,20 +26,20 @@ function ClaimForm() {
     clientName: "",
     garageName: "",
     note: "",
-    files: [], // Array to store file objects
+    files: [], 
   });
-  const [status, setStatus] = useState(""); // State to manage submission status
+  const [status, setStatus] = useState(""); 
 
   useEffect(() => {
     let timer;
     if (status) {
-      // Set a timeout to clear the status after 8 seconds
+      
       timer = setTimeout(() => {
         setStatus("");
       }, 8000);
     }
 
-    return () => clearTimeout(timer); // Clean up the timeout if the component unmounts or status changes
+    return () => clearTimeout(timer); 
   }, [status]);
 
   const handleInputChange = (e) => {
@@ -63,11 +63,11 @@ function ClaimForm() {
           uploadedImageURLs.push(downloadURL);
         }
 
-        setImageURLs(uploadedImageURLs); // Save the URLs in state
-        setFormData((prev) => ({ ...prev, files: [...files] })); // Update files in formData
+        setImageURLs(uploadedImageURLs); 
+        setFormData((prev) => ({ ...prev, files: [...files] })); 
       } catch (error) {
         console.error(error);
-        setStatus("error"); // Set status to error if upload fails
+        setStatus("error"); 
       } finally {
         setUploading(false);
       }
@@ -83,14 +83,14 @@ function ClaimForm() {
       return;
     }
 
-    // Decode the token to extract the userId (_id)
+    
     const decodedToken = jwtDecode(token);
     const userId = decodedToken._id;
 
     const formDataToSubmit = {
       ...formData,
       userId,
-      file: imageURLs, // Pass the array of image URLs here
+      file: imageURLs, 
     };
 
     try {
@@ -98,9 +98,9 @@ function ClaimForm() {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("Payment saved successfully:", response.data);
-      setStatus("success"); // Set status to success on successful submission
+      setStatus("success"); 
 
-      // Reset the form fields
+      
       setFormData({
         claimId: "",
         vehicleNumber: "",
@@ -109,10 +109,10 @@ function ClaimForm() {
         note: "",
         files: [],
       });
-      setImageURLs([]); // Clear uploaded images
+      setImageURLs([]); 
     } catch (error) {
       console.error("Failed to save payment:", error.response?.data || error.message);
-      setStatus("error"); // Set status to error on failure
+      setStatus("error"); 
     }
   };
 
@@ -136,8 +136,6 @@ function ClaimForm() {
     { name: 'Mymech', district: 'Colombo', location: 'Major districts like Colombo, Gampaha, Kandy, Kalutara', contact: 'Not Available' },
     { name: 'Dambulla Nishantha Jayasundera Ideal First Choice', district: 'Matale', location: '609 A, Kurunegala Road, Dambulla', contact: 'Not Available' },
     { name: 'Dambulla Nuwan Rangiri Motors & Windscreen', district: 'Matale', location: 'Kurunegala road, Dambulla', contact: 'Not Available' },
-
-    // Additional 50 garages
     { name: 'Alpha Auto Services', district: 'Colombo', location: 'No:500 Galle Road Colombo 06', contact: '0112502565' },
     { name: 'City Car Repairs', district: 'Colombo', location: 'No:120A Malabe Road Nugegoda', contact: '0112255115' },
     { name: 'Siva Motors', district: 'Kandy', location: 'No:450 Kandy Road, Peradeniya', contact: '0812273321' },
@@ -252,7 +250,7 @@ function ClaimForm() {
           onChange={handleFileChange}
           multiple
           accept="image/*"
-          style={{ display: "none" }} // Hide the default input
+          style={{ display: "none" }} 
         />
 
         <Container maxWidth="md" sx={{ marginTop: 2, marginBottom: 1, borderRadius: "5px", border: "#ccc solid 1px" }}>
@@ -285,7 +283,7 @@ function ClaimForm() {
           rows={3}
         />
 
-        {/* Displaying uploaded images */}
+        
         {imageURLs.length > 0 && (
           <div>
             {imageURLs.map((url, index) => (
@@ -302,7 +300,7 @@ function ClaimForm() {
           padding: '0px',
           borderRadius: '8px',
         }}>
-          {/* Displaying status message */}
+         
           {status && (
             <Alert severity={status === "success" ? "success" : "error"} sx={{ marginBottom: 2 }}>
               {status === "success"

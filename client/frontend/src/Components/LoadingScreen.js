@@ -1,11 +1,11 @@
 import React from 'react';
 import Lottie from 'react-lottie';
-import animationData from '../Assets/Animation/LoadAnime.json'; // Your Lottie animation file
+import animationData from '../Assets/Animation/LoadAnime.json'; 
 
 const LoadingScreen = () => {
   const defaultOptions = {
     loop: true,
-    autoplay: true, // Animation will play automatically
+    autoplay: true, 
     animationData: animationData,
     rendererSettings: {
       preserveAspectRatio: 'xMidYMid slice',

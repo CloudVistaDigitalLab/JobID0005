@@ -22,9 +22,8 @@ function ContactUs() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true); // Set loading to true when the form is being submitted
-        setStatus(''); // Reset the previous status
-
+        setLoading(true); 
+        setStatus(''); 
         try {
             const response = await axios.post('http://localhost:4000/api/send-email/contactUs', formData);
             if (response.status === 200) {
@@ -39,7 +38,7 @@ function ContactUs() {
         } catch (error) {
             setStatus('error');
         } finally {
-            setLoading(false); // Set loading to false when the request is finished
+            setLoading(false); 
         }
     };
 
@@ -128,10 +127,10 @@ function ContactUs() {
                             marginBottom: 2,
                             lineHeight: 1.7,
                             '& a': {
-                                color: '#2a9d8f', // Make the links green
-                                textDecoration: 'none', // Remove underline
+                                color: '#2a9d8f', 
+                                textDecoration: 'none',
                                 '&:hover': {
-                                    textDecoration: 'underline', // Add underline on hover
+                                    textDecoration: 'underline', 
                                 }
                             }
                         }}>

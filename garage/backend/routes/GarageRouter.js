@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'geeshanthisera1234@gmail.com',
-        pass: 'qr gq kf ot vn iy tt xi', // Ensure this is secure
+        pass: 'qr gq kf ot vn iy tt xi', 
     },
 });
 
@@ -16,7 +16,7 @@ router.post('/garage', async (req, res) => {
   try {
     const { claimId, vehicleNumber, clientName, garageName, file, note, userId } = req.body;
 
-    // Validate required fields
+    
     if (!claimId || !vehicleNumber || !clientName || !garageName || !userId) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -26,7 +26,7 @@ router.post('/garage', async (req, res) => {
       vehicleNumber,
       clientName,
       garageName,
-      file,  // Store an array of image URLs
+      file,  
       note,
       userId,
     });

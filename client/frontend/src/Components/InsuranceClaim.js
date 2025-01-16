@@ -146,7 +146,7 @@ function InsuranceClaim() {
 
 
   useEffect(() => {
-    // Check if state is passed and set the modal visibility
+    
     if (location.state && location.state.isVerify) {
       setIsVerify(true);
     }
@@ -156,13 +156,13 @@ function InsuranceClaim() {
 
 
   useEffect(() => {
-    // Fetching the latest claim and the next claimId
+    
     const fetchClaim = async () => {
       try {
         const response = await axios.get('http://localhost:4000/api/claim/getclaim');
         if (response.data.success) {
           setClaim(response.data.existingDetails);
-          setNextClaimId(response.data.nextClaimId); // Set the next claim ID
+          setNextClaimId(response.data.nextClaimId); 
         } else {
           setError('Failed to load claims');
         }
@@ -192,7 +192,7 @@ function InsuranceClaim() {
   };
 
   const handleVerifyClaim = () => {
-    setIsVerify(true); // Open modal when button is clicked
+    setIsVerify(true); 
   };
 
   const handleImageChange = async (e) => {
@@ -204,7 +204,7 @@ function InsuranceClaim() {
     }
 
     setError(null);
-    setIsSubmitting(true); // Disable submit button and show loading indicator
+    setIsSubmitting(true); 
     const urls = [];
 
     try {
@@ -218,12 +218,12 @@ function InsuranceClaim() {
         console.log('File uploaded successfully:', downloadURL);
       }
 
-      setUploadedURLs(urls); // Update URLs in state
+      setUploadedURLs(urls); 
     } catch (error) {
       console.error('Error uploading files:', error);
       setError('Failed to upload evidence. Please try again.');
     } finally {
-      setIsSubmitting(false); // Re-enable submit button after upload
+      setIsSubmitting(false); 
     }
   };
 
@@ -242,23 +242,23 @@ function InsuranceClaim() {
       return;
     }
 
-    // Decode the token to extract the userId (_id)
+   
     const decodedToken = jwtDecode(token);
     const userId = decodedToken._id;
 
-    // Prepare form data
+    
     const formData = new FormData();
     Object.keys(claimDetails).forEach((key) => {
       formData.append(key, claimDetails[key]);
     });
 
-    // Append the userId to form data
+    
     formData.append('userId', userId);
 
-    // Send URLs as a JSON string
+    
     formData.append('uploadedURLs', JSON.stringify(uploadedURLs));
 
-    // Log FormData to verify the content
+   
     for (let [key, value] of formData.entries()) {
       console.log(`${key}: ${value}`);
     }
@@ -290,8 +290,8 @@ function InsuranceClaim() {
     }
   };
 
-  const email = 'geeshanthisera1234@gmail.com'; // Recipient's email
-  const subject = `Insurance Claim Verification: ${nextClaimId}`; // Subject including Claim ID
+  const email = 'geeshanthisera1234@gmail.com'; 
+  const subject = `Insurance Claim Verification: ${nextClaimId}`; 
   const body = `This is a message sent from the QR Code for Claim ID: ${nextClaimId}. 
   Please verify the claim details to confirm if this is an actual accident.
   
@@ -493,7 +493,7 @@ function InsuranceClaim() {
             onChange={handleImageChange}
             multiple
             accept="image/*"
-            style={{ display: 'none' }} // Hide the default input
+            style={{ display: 'none' }} 
           />
 
           <Container maxWidth="md" sx={{ marginTop: 5, marginBottom: 5, borderRadius: '5px', border: "#ccc solid 1px" }}>
@@ -518,7 +518,7 @@ function InsuranceClaim() {
           {uploadedURLs.length > 0 && (
             <Grid container spacing={2}>
               {uploadedURLs.map((url, index) => (
-                <Grid item xs={2.4} key={index}> {/* xs={2.4} ensures 5 items per row */}
+                <Grid item xs={2.4} key={index}> 
                   <Card>
                     <CardMedia
                       component="img"
@@ -540,15 +540,15 @@ function InsuranceClaim() {
                   backgroundColor: 'white',
                   margin: '0px',
                   width: '300px',
-                  // Define height for proper centering
-                  display: 'flex', // Use flexbox to center content
-                  justifyContent: 'center', // Center horizontally
-                  alignItems: 'center', // Center vertically
+                  
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
                   textAlign: 'center',
                 }}
               >
                 {isSubmitting ? (
-                  <p style={{ color: "#FE9900" }}>Please wait, loading images...</p> // Or use a spinner component here
+                  <p style={{ color: "#FE9900" }}>Please wait, loading images...</p> 
                 ) : (
                   <span></span>
                 )}
@@ -564,7 +564,7 @@ function InsuranceClaim() {
               sx={{ '&:hover': { backgroundColor: '#5B6B7C' } }}
             >
               {isSubmitting ? (
-                <span>Loading images...</span>  // Or use a spinner component here
+                <span>Loading images...</span> 
               ) : (
                 'Submit Claim'
               )}
@@ -573,7 +573,7 @@ function InsuranceClaim() {
               type="button"
               variant="contained"
               color="primary"
-              onClick={handleVerifyClaim} // Open the modal
+              onClick={handleVerifyClaim} 
               fullWidth
               style={{ marginTop: '20px' }}
               sx={{ '&:hover': { backgroundColor: '#5B6B7C' } }}
@@ -589,12 +589,12 @@ function InsuranceClaim() {
         <Modal open={isVerify} onClose={closeVerifyConfirmation}>
           <div style={{ padding: '30px', backgroundColor: 'white', margin: '100px auto', width: '500px', textAlign: 'center', borderRadius: '10px' }}>
             <QRCodeSVG
-              value={mailtoLink} // QR code will contain the mailto link
-              size={256} // Size of the QR code (pixels)
-              fgColor="#000000" // Foreground color (QR code color)
-              bgColor="#ffffff" // Background color (QR code background)
-              level="H" // Error correction level (L, M, Q, H)
-              includeMargin={true} // Include margin around the QR code
+              value={mailtoLink} 
+              size={256} 
+              fgColor="#000000" 
+              bgColor="#ffffff" 
+              level="H" 
+              includeMargin={true} 
             />
             <h4>Claim ID: {nextClaimId}</h4>
             <p>Please scan the QR code to verify the claim.</p>
@@ -613,9 +613,9 @@ function InsuranceClaim() {
                 justifyContent: 'center',
                 marginTop: 5,
                 marginBottom: 5,
-                backgroundColor: '#FFCBCB', // Add background color to the container
-                padding: '5px',  // Optional: Add padding to the container for spacing
-                borderRadius: '15px', // Optional: Add border radius to the container
+                backgroundColor: '#FFCBCB',
+                padding: '5px',  
+                borderRadius: '15px', 
               }}
             >
               <Typography variant="h6" sx={{ marginTop: 5, marginBottom: 5, color: 'red' }}>
